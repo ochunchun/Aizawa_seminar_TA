@@ -7,7 +7,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
 <meta name="author" content="成田 慶之">
-<meta name="dcterms.date" content="2025-12-24">
+<meta name="dcterms.date" content="2025-12-26">
 
 <title>R Studioで計量経済分析(2)</title>
 <style>
@@ -21,6 +21,41 @@ ul.task-list li input[type="checkbox"] {
   width: 0.8em;
   margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
   vertical-align: middle;
+}
+/* CSS for syntax highlighting */
+html { -webkit-text-size-adjust: 100%; }
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+  }
+pre.numberSource { margin-left: 3em;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
 }
 </style>
 
@@ -41,10 +76,29 @@ ul.task-list li input[type="checkbox"] {
 
 </head>
 
-<body class="fullcontent quarto-light">
+<body class="quarto-light">
 
 <div id="quarto-content" class="page-columns page-rows-contents page-layout-article">
-
+<div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
+  <nav id="TOC" role="doc-toc" class="toc-active">
+    <h2 id="toc-title">Table of contents</h2>
+   
+  <ul>
+  <li><a href="#データの読み込み" id="toc-データの読み込み" class="nav-link active" data-scroll-target="#データの読み込み"><span class="header-section-number">1</span> データの読み込み</a>
+  <ul class="collapse">
+  <li><a href="#ファイルのパス取得" id="toc-ファイルのパス取得" class="nav-link" data-scroll-target="#ファイルのパス取得"><span class="header-section-number">1.1</span> ファイルのパス取得</a></li>
+  <li><a href="#csvファイルの読み込み" id="toc-csvファイルの読み込み" class="nav-link" data-scroll-target="#csvファイルの読み込み"><span class="header-section-number">1.2</span> csvファイルの読み込み</a></li>
+  <li><a href="#excelファイルの読み込み" id="toc-excelファイルの読み込み" class="nav-link" data-scroll-target="#excelファイルの読み込み"><span class="header-section-number">1.3</span> excelファイルの読み込み</a></li>
+  </ul></li>
+  <li><a href="#データの結合" id="toc-データの結合" class="nav-link" data-scroll-target="#データの結合"><span class="header-section-number">2</span> データの結合</a>
+  <ul class="collapse">
+  <li><a href="#事前準備" id="toc-事前準備" class="nav-link" data-scroll-target="#事前準備"><span class="header-section-number">2.1</span> 事前準備</a></li>
+  <li><a href="#縦に合体させる行の結合" id="toc-縦に合体させる行の結合" class="nav-link" data-scroll-target="#縦に合体させる行の結合"><span class="header-section-number">2.2</span> 縦に合体させる(行の結合)</a></li>
+  <li><a href="#横に合体させる列の結合" id="toc-横に合体させる列の結合" class="nav-link" data-scroll-target="#横に合体させる列の結合"><span class="header-section-number">2.3</span> 横に合体させる(列の結合)</a></li>
+  </ul></li>
+  </ul>
+</nav>
+</div>
 <main class="content" id="quarto-document-content">
 
 <header id="title-block-header" class="quarto-title-block default">
@@ -66,7 +120,7 @@ ul.task-list li input[type="checkbox"] {
     <div>
     <div class="quarto-title-meta-heading">Published</div>
     <div class="quarto-title-meta-contents">
-      <p class="date">December 24, 2025</p>
+      <p class="date">December 26, 2025</p>
     </div>
   </div>
   
@@ -78,15 +132,347 @@ ul.task-list li input[type="checkbox"] {
 </header>
 
 
-<section id="データの読み込み" class="level2">
-<h2 class="anchored" data-anchor-id="データの読み込み">データの読み込み</h2>
-<p>卒業研究等で分析を行なう際、政府統計などのWebサイトからcsvファイルやexcelファイルのデータをダウンロードし、それらをR上に読み込んで分析する。</p>
-<section id="csvファイルの読み込み" class="level3">
-<h3 class="anchored" data-anchor-id="csvファイルの読み込み">csvファイルの読み込み</h3>
+<p>ここでは、<strong>データの読み込み</strong>、<strong>データの結合</strong>について簡単に紹介する。</p>
+<section id="データの読み込み" class="level2" data-number="1">
+<h2 data-number="1" class="anchored" data-anchor-id="データの読み込み"><span class="header-section-number">1</span> データの読み込み</h2>
+<p>前回の<a href="https://ochunchun.github.io/Aizawa_seminar_TA/R_Studio_lec/R_Studio_lec(1)/R_Studio_lec(1).html">R Studioで計量経済分析(1)</a>では、パッケージ{wooldridge}にあるデータセットを用いてOLS回帰分析を実行した。</p>
+<p>しかし、皆さんが卒業研究などで分析を行なう際、恐らく全ての学生は政府統計などのWebサイトからデータをダウンロードし、それらをRに<strong>読み込んで</strong>分析を行なう。</p>
+<p>ここではその<strong>読み込みの方法</strong>を紹介する。</p>
+<section id="ファイルのパス取得" class="level3" data-number="1.1">
+<h3 data-number="1.1" class="anchored" data-anchor-id="ファイルのパス取得"><span class="header-section-number">1.1</span> ファイルのパス取得</h3>
+<p>Webサイトでデータを何らかのファイルに保存し、Rで呼び出すとき、<strong>ファイルのパス</strong> と言うものが必要になる。これはそのデータがパソコン内のどこにあるかを示す住所のようなもので、<code>"C:/Users/narita yoshiyuki/Desktop/相澤ゼミ_資料/TA/..."</code>のような形になっている。</p>
+<p>パスの取得方法は簡単で、ファイル→対象のデータを右クリック→パスのコピーで取得可能だ。</p>
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="R_Studio_lec(2).png" class="img-fluid figure-img"></p>
+<figcaption>パス取得方法</figcaption>
+</figure>
+</div>
+</section>
+<section id="csvファイルの読み込み" class="level3" data-number="1.2">
+<h3 data-number="1.2" class="anchored" data-anchor-id="csvファイルの読み込み"><span class="header-section-number">1.2</span> csvファイルの読み込み</h3>
+<p>csvファイルを読み込む際に用いる関数は<code>read.csv(ファイルのパス)</code>若しくは<code>read_csv(ファイルのパス)</code>を用いる。<a href="#fn1" class="footnote-ref" id="fnref1" role="doc-noteref"><sup>1</sup></a></p>
+<p>ここでは、<a href="https://www.oecd.org/en/data.html">主要統計 - OECD</a>からダウンロードした、各国の平均寿命データを読み込んでみる。</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="co"># 何らかの変数に代入する形で読み込む(read.csv())</span></span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a>life_exp <span class="ot">&lt;-</span> <span class="fu">read.csv</span>(<span class="st">"C:/Users/narita yoshiyuki/Desktop/相澤ゼミ_資料/TA/Aizawa_seminar_TA/R_Studio_lec/data/OECD.ELS.HD,DSD_HEALTH_STAT@DF_HEALTH_STATUS,+.A.LFEXP.Y.Y0.........csv"</span>)</span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a><span class="co"># 読み込んだデータを表示してみる(無視してOK)</span></span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a><span class="fu">head</span>(life_exp)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>  STRUCTURE                                      STRUCTURE_ID STRUCTURE_NAME
+1  DATAFLOW OECD.ELS.HD:DSD_HEALTH_STAT@DF_HEALTH_STATUS(1.1)  Health status
+2  DATAFLOW OECD.ELS.HD:DSD_HEALTH_STAT@DF_HEALTH_STATUS(1.1)  Health status
+3  DATAFLOW OECD.ELS.HD:DSD_HEALTH_STAT@DF_HEALTH_STATUS(1.1)  Health status
+4  DATAFLOW OECD.ELS.HD:DSD_HEALTH_STAT@DF_HEALTH_STATUS(1.1)  Health status
+5  DATAFLOW OECD.ELS.HD:DSD_HEALTH_STAT@DF_HEALTH_STATUS(1.1)  Health status
+6  DATAFLOW OECD.ELS.HD:DSD_HEALTH_STAT@DF_HEALTH_STATUS(1.1)  Health status
+  ACTION REF_AREA Reference.area FREQ Frequency.of.observation MEASURE
+1      I      AUS      Australia    A                   Annual   LFEXP
+2      I      AUS      Australia    A                   Annual   LFEXP
+3      I      AUS      Australia    A                   Annual   LFEXP
+4      I      AUS      Australia    A                   Annual   LFEXP
+5      I      AUS      Australia    A                   Annual   LFEXP
+6      I      AUS      Australia    A                   Annual   LFEXP
+          Measure UNIT_MEASURE Unit.of.measure AGE     Age SEX    Sex
+1 Life expectancy            Y           Years  Y0 0 years   M   Male
+2 Life expectancy            Y           Years  Y0 0 years   M   Male
+3 Life expectancy            Y           Years  Y0 0 years   M   Male
+4 Life expectancy            Y           Years  Y0 0 years   F Female
+5 Life expectancy            Y           Years  Y0 0 years  _T  Total
+6 Life expectancy            Y           Years  Y0 0 years  _T  Total
+  SOCIO_ECON_STATUS Socio.economic.status DEATH_CAUSE Cause.of.death
+1                _Z        Not applicable          _Z Not applicable
+2                _Z        Not applicable          _Z Not applicable
+3                _Z        Not applicable          _Z Not applicable
+4                _Z        Not applicable          _Z Not applicable
+5                _Z        Not applicable          _Z Not applicable
+6                _Z        Not applicable          _Z Not applicable
+  CALC_METHODOLOGY Calculation.methodology GESTATION_THRESHOLD
+1               _Z          Not applicable                  _Z
+2               _Z          Not applicable                  _Z
+3               _Z          Not applicable                  _Z
+4               _Z          Not applicable                  _Z
+5               _Z          Not applicable                  _Z
+6               _Z          Not applicable                  _Z
+  Gestation.period.threshold HEALTH_STATUS  Health.status DISEASE
+1             Not applicable            _Z Not applicable      _Z
+2             Not applicable            _Z Not applicable      _Z
+3             Not applicable            _Z Not applicable      _Z
+4             Not applicable            _Z Not applicable      _Z
+5             Not applicable            _Z Not applicable      _Z
+6             Not applicable            _Z Not applicable      _Z
+         Disease CANCER_SITE    Cancer.site TIME_PERIOD Time.period OBS_VALUE
+1 Not applicable          _Z Not applicable        2023          NA      81.1
+2 Not applicable          _Z Not applicable        2022          NA      81.2
+3 Not applicable          _Z Not applicable        2021          NA      81.3
+4 Not applicable          _Z Not applicable        2015          NA      84.5
+5 Not applicable          _Z Not applicable        2018          NA      82.8
+6 Not applicable          _Z Not applicable        2017          NA      82.5
+  Observation.value DECIMALS Decimals OBS_STATUS Observation.status OBS_STATUS2
+1                NA        1      One                                        NA
+2                NA        1      One                                        NA
+3                NA        1      One                                        NA
+4                NA        1      One                                        NA
+5                NA        1      One                                        NA
+6                NA        1      One                                        NA
+  Observation.status.2 OBS_STATUS3 Observation.status.3 UNIT_MULT
+1                   NA          NA                   NA         0
+2                   NA          NA                   NA         0
+3                   NA          NA                   NA         0
+4                   NA          NA                   NA         0
+5                   NA          NA                   NA         0
+6                   NA          NA                   NA         0
+  Unit.multiplier
+1           Units
+2           Units
+3           Units
+4           Units
+5           Units
+6           Units</code></pre>
+</div>
+</div>
+<p>今度は<code>read_csv()</code>を用いて読み込む。<code>read_csv()</code>は{readr}というパッケージ含まれている。<a href="#fn2" class="footnote-ref" id="fnref2" role="doc-noteref"><sup>2</sup></a></p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb3"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="co"># readrの読み込み</span></span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(readr)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb4"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="co"># データの読み込み</span></span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a>life_exp_2 <span class="ot">&lt;-</span> <span class="fu">read_csv</span>(<span class="st">"C:/Users/narita yoshiyuki/Desktop/相澤ゼミ_資料/TA/Aizawa_seminar_TA/R_Studio_lec/data/OECD.ELS.HD,DSD_HEALTH_STAT@DF_HEALTH_STATUS,+.A.LFEXP.Y.Y0.........csv"</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Rows: 1386 Columns: 44
+── Column specification ────────────────────────────────────────────────────────
+Delimiter: ","
+chr (34): STRUCTURE, STRUCTURE_ID, STRUCTURE_NAME, ACTION, REF_AREA, Referen...
+dbl  (4): TIME_PERIOD, OBS_VALUE, DECIMALS, UNIT_MULT
+lgl  (6): Time period, Observation value, OBS_STATUS2, Observation status 2,...
+
+ℹ Use `spec()` to retrieve the full column specification for this data.
+ℹ Specify the column types or set `show_col_types = FALSE` to quiet this message.</code></pre>
+</div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb6"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="co"># データを表示してみる</span></span>
+<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a>life_exp_2</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code># A tibble: 1,386 × 44
+   STRUCTURE STRUCTURE_ID  STRUCTURE_NAME ACTION REF_AREA `Reference area` FREQ 
+   &lt;chr&gt;     &lt;chr&gt;         &lt;chr&gt;          &lt;chr&gt;  &lt;chr&gt;    &lt;chr&gt;            &lt;chr&gt;
+ 1 DATAFLOW  OECD.ELS.HD:… Health status  I      AUS      Australia        A    
+ 2 DATAFLOW  OECD.ELS.HD:… Health status  I      AUS      Australia        A    
+ 3 DATAFLOW  OECD.ELS.HD:… Health status  I      AUS      Australia        A    
+ 4 DATAFLOW  OECD.ELS.HD:… Health status  I      AUS      Australia        A    
+ 5 DATAFLOW  OECD.ELS.HD:… Health status  I      AUS      Australia        A    
+ 6 DATAFLOW  OECD.ELS.HD:… Health status  I      AUS      Australia        A    
+ 7 DATAFLOW  OECD.ELS.HD:… Health status  I      AUS      Australia        A    
+ 8 DATAFLOW  OECD.ELS.HD:… Health status  I      AUS      Australia        A    
+ 9 DATAFLOW  OECD.ELS.HD:… Health status  I      AUS      Australia        A    
+10 DATAFLOW  OECD.ELS.HD:… Health status  I      AUS      Australia        A    
+# ℹ 1,376 more rows
+# ℹ 37 more variables: `Frequency of observation` &lt;chr&gt;, MEASURE &lt;chr&gt;,
+#   Measure &lt;chr&gt;, UNIT_MEASURE &lt;chr&gt;, `Unit of measure` &lt;chr&gt;, AGE &lt;chr&gt;,
+#   Age &lt;chr&gt;, SEX &lt;chr&gt;, Sex &lt;chr&gt;, SOCIO_ECON_STATUS &lt;chr&gt;,
+#   `Socio-economic status` &lt;chr&gt;, DEATH_CAUSE &lt;chr&gt;, `Cause of death` &lt;chr&gt;,
+#   CALC_METHODOLOGY &lt;chr&gt;, `Calculation methodology` &lt;chr&gt;,
+#   GESTATION_THRESHOLD &lt;chr&gt;, `Gestation period threshold` &lt;chr&gt;, …</code></pre>
+</div>
+</div>
+</section>
+<section id="excelファイルの読み込み" class="level3" data-number="1.3">
+<h3 data-number="1.3" class="anchored" data-anchor-id="excelファイルの読み込み"><span class="header-section-number">1.3</span> excelファイルの読み込み</h3>
+<p>excelファイルの読み込みは{readxl}パッケージの<code>read.xlsx(ファイルのパス)</code>を用いて行なう。</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb8"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="co"># readxlパッケージのダウンロード</span></span>
+<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a><span class="fu">install.packages</span>(<span class="st">"readxl"</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb9"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a><span class="co"># readxlパッケージの読み込み</span></span>
+<span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(readxl)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+<p>ここでは令和5年東京都国・地域別外国人旅行者行動特性調査のexcelデータを読み込む。</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb10"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a>Tokyo_r5 <span class="ot">&lt;-</span> <span class="fu">read_xlsx</span>(<span class="st">"C:/Users/narita yoshiyuki/Desktop/相澤ゼミ_資料/TA/Aizawa_seminar_TA/R_Studio_lec/data/【R5】国・地域別外国人旅行者行動特性調査.xlsx"</span>)</span>
+<span id="cb10-2"><a href="#cb10-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb10-3"><a href="#cb10-3" aria-hidden="true" tabindex="-1"></a><span class="co"># 読み込んだデータを表示してみる</span></span>
+<span id="cb10-4"><a href="#cb10-4" aria-hidden="true" tabindex="-1"></a>Tokyo_r5</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code># A tibble: 11,327 × 227
+   調査日               国籍 居住地  性別  年齢 入国空港 訪都有無 都内泊数
+   &lt;dttm&gt;              &lt;dbl&gt;  &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt;    &lt;dbl&gt;    &lt;dbl&gt;    &lt;dbl&gt;
+ 1 2023-02-22 00:00:00    15      6     1    51        2        1       17
+ 2 2023-02-22 00:00:00     3      3     1    39        2        1        4
+ 3 2023-02-22 00:00:00    12     12     1    28        2        1        6
+ 4 2023-02-22 00:00:00     8      8     2    27        2        1        8
+ 5 2023-02-22 00:00:00    18     18     1    42        2        1       13
+ 6 2023-02-22 00:00:00     2      2     1    45        2        1        4
+ 7 2023-02-22 00:00:00     2      2     1    22        2        1        2
+ 8 2023-02-22 00:00:00    12     12     1    23        2        1        3
+ 9 2023-02-22 00:00:00    12     12     1    22        2        1       14
+10 2023-02-22 00:00:00    21     21     1    29        2        1        6
+# ℹ 11,317 more rows
+# ℹ 219 more variables: 訪都回数 &lt;dbl&gt;, 訪都目的 &lt;dbl&gt;, 同行者1 &lt;dbl&gt;,
+#   同行者2 &lt;dbl&gt;, 同行者3 &lt;dbl&gt;, 同行者4 &lt;dbl&gt;, 同行者5 &lt;dbl&gt;, 同行者6 &lt;dbl&gt;,
+#   宿泊施設1 &lt;dbl&gt;, 宿泊施設2 &lt;dbl&gt;, 宿泊施設3 &lt;dbl&gt;, 宿泊施設4 &lt;dbl&gt;,
+#   宿泊施設5 &lt;dbl&gt;, 宿泊施設6 &lt;dbl&gt;, 宿泊施設7 &lt;dbl&gt;, 旅行形態 &lt;dbl&gt;,
+#   ツアー価格 &lt;dbl&gt;, 航空運賃 &lt;dbl&gt;, マイレージ有無 &lt;dbl&gt;, 支出総額 &lt;dbl&gt;,
+#   宿泊費 &lt;dbl&gt;, 飲食費 &lt;dbl&gt;, 都内交通費 &lt;dbl&gt;, 娯楽費 &lt;dbl&gt;, 買物費 &lt;dbl&gt;, …</code></pre>
+</div>
+</div>
+</section>
+</section>
+<section id="データの結合" class="level2" data-number="2">
+<h2 data-number="2" class="anchored" data-anchor-id="データの結合"><span class="header-section-number">2</span> データの結合</h2>
+<p>Webサイト上のデータを分析する場合、1つのデータ・サイト上に欲しい情報が全て入っていることは少ないと思われる。そこで我々は複数のWebサイト・データから情報を集めて分析を行なうことになるが、最終的にそれらのデータを1つに<strong>結合</strong>させなければならない。</p>
+<p>そのようなデータの結合をRで行なうための関数が複数存在する。</p>
+<section id="事前準備" class="level3" data-number="2.1">
+<h3 data-number="2.1" class="anchored" data-anchor-id="事前準備"><span class="header-section-number">2.1</span> 事前準備</h3>
+<p>本節において例として用いるデータを事前に作成しておく。</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb12"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a>df1 <span class="ot">&lt;-</span> <span class="fu">data.frame</span>(</span>
+<span id="cb12-2"><a href="#cb12-2" aria-hidden="true" tabindex="-1"></a>  <span class="at">Pref =</span> <span class="fu">c</span>(<span class="st">"Hokkaido"</span>,<span class="st">"Aomori"</span>, <span class="st">"Iwate"</span>, <span class="st">"Miyagi"</span>),</span>
+<span id="cb12-3"><a href="#cb12-3" aria-hidden="true" tabindex="-1"></a>  <span class="at">Pref_code =</span> <span class="dv">1</span><span class="sc">:</span><span class="dv">4</span>,</span>
+<span id="cb12-4"><a href="#cb12-4" aria-hidden="true" tabindex="-1"></a>  <span class="at">food =</span> <span class="fu">c</span>(<span class="st">"ジンギスカン"</span>, <span class="st">"リンゴ"</span>, <span class="st">"わんこそば"</span>, <span class="st">"牛タン"</span>))</span>
+<span id="cb12-5"><a href="#cb12-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb12-6"><a href="#cb12-6" aria-hidden="true" tabindex="-1"></a>df1</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>      Pref Pref_code         food
+1 Hokkaido         1 ジンギスカン
+2   Aomori         2       リンゴ
+3    Iwate         3   わんこそば
+4   Miyagi         4       牛タン</code></pre>
+</div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb14"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a>df2 <span class="ot">&lt;-</span> <span class="fu">data.frame</span>(</span>
+<span id="cb14-2"><a href="#cb14-2" aria-hidden="true" tabindex="-1"></a>  <span class="at">Pref =</span> <span class="fu">c</span>(<span class="st">"Akita"</span>, <span class="st">"Yamagata"</span>, <span class="st">"Fukushima"</span>),</span>
+<span id="cb14-3"><a href="#cb14-3" aria-hidden="true" tabindex="-1"></a>  <span class="at">Pref_code =</span> <span class="dv">5</span><span class="sc">:</span><span class="dv">7</span>,</span>
+<span id="cb14-4"><a href="#cb14-4" aria-hidden="true" tabindex="-1"></a>  <span class="at">food =</span> <span class="fu">c</span>(<span class="st">"きりたんぽ"</span>, <span class="st">"さくらんぼ"</span>, <span class="st">"喜多方ラーメン"</span>))</span>
+<span id="cb14-5"><a href="#cb14-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb14-6"><a href="#cb14-6" aria-hidden="true" tabindex="-1"></a>df2</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>       Pref Pref_code           food
+1     Akita         5     きりたんぽ
+2  Yamagata         6     さくらんぼ
+3 Fukushima         7 喜多方ラーメン</code></pre>
+</div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb16"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb16-1"><a href="#cb16-1" aria-hidden="true" tabindex="-1"></a>df3 <span class="ot">&lt;-</span> <span class="fu">data.frame</span>(</span>
+<span id="cb16-2"><a href="#cb16-2" aria-hidden="true" tabindex="-1"></a>  <span class="at">Pref_code =</span> <span class="fu">c</span>(<span class="dv">3</span>, <span class="dv">1</span>, <span class="dv">4</span>, <span class="dv">2</span>),</span>
+<span id="cb16-3"><a href="#cb16-3" aria-hidden="true" tabindex="-1"></a>  <span class="at">Pref_capital =</span> <span class="fu">c</span>(<span class="st">"Morioka"</span>, <span class="st">"Sapporo"</span>, <span class="st">"Sendai"</span>, <span class="st">"Aomori"</span>),</span>
+<span id="cb16-4"><a href="#cb16-4" aria-hidden="true" tabindex="-1"></a>  <span class="at">Famous_person =</span> <span class="fu">c</span>(<span class="st">"大谷 翔平"</span>, <span class="st">"大泉 洋"</span>, <span class="st">"サンドウィッチマン"</span>, <span class="st">"ピコ太郎"</span>))</span>
+<span id="cb16-5"><a href="#cb16-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb16-6"><a href="#cb16-6" aria-hidden="true" tabindex="-1"></a>df3</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>  Pref_code Pref_capital      Famous_person
+1         3      Morioka          大谷 翔平
+2         1      Sapporo            大泉 洋
+3         4       Sendai サンドウィッチマン
+4         2       Aomori           ピコ太郎</code></pre>
+</div>
+</div>
+</section>
+<section id="縦に合体させる行の結合" class="level3" data-number="2.2">
+<h3 data-number="2.2" class="anchored" data-anchor-id="縦に合体させる行の結合"><span class="header-section-number">2.2</span> 縦に合体させる(行の結合)</h3>
+<p>2つのデータを縦に結合する(行同士を繋げる)関数は{dplyr}パッケージの<code>bind_rows(データ1, データ2, ...)</code>が存在する。</p>
+<p>ここでは、上記で作ったdf1とdf2を結合させてみる。</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb18"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb18-1"><a href="#cb18-1" aria-hidden="true" tabindex="-1"></a><span class="co"># dplyrパッケージを読み込む</span></span>
+<span id="cb18-2"><a href="#cb18-2" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(dplyr)</span>
+<span id="cb18-3"><a href="#cb18-3" aria-hidden="true" tabindex="-1"></a><span class="co"># 上記のデータを結合してみる</span></span>
+<span id="cb18-4"><a href="#cb18-4" aria-hidden="true" tabindex="-1"></a>df1_2 <span class="ot">&lt;-</span> <span class="fu">bind_rows</span>(df1, df2)</span>
+<span id="cb18-5"><a href="#cb18-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb18-6"><a href="#cb18-6" aria-hidden="true" tabindex="-1"></a>df1_2</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>       Pref Pref_code           food
+1  Hokkaido         1   ジンギスカン
+2    Aomori         2         リンゴ
+3     Iwate         3     わんこそば
+4    Miyagi         4         牛タン
+5     Akita         5     きりたんぽ
+6  Yamagata         6     さくらんぼ
+7 Fukushima         7 喜多方ラーメン</code></pre>
+</div>
+</div>
+<p>ここで重要な点として、合体させる2つのデータは<strong>同じ変数名</strong>を持つ必要がある。今回の例では<code>Pref, Pref_code, food</code>という3つの変数しかないため分かりやすいが、Web上データでは変数が10個や100個となるものが普通に存在するため、注意が必要だ。<a href="#fn3" class="footnote-ref" id="fnref3" role="doc-noteref"><sup>3</sup></a></p>
+</section>
+<section id="横に合体させる列の結合" class="level3" data-number="2.3">
+<h3 data-number="2.3" class="anchored" data-anchor-id="横に合体させる列の結合"><span class="header-section-number">2.3</span> 横に合体させる(列の結合)</h3>
+<p>横に結合させる(列を繋げる)関数として、{dplyr}パッケージの<code>bind_cols()</code>や<code>left_join()</code>が挙げられる。</p>
+<p>ここでは先ほど作ったデータのdf1とdf3を結合させる。</p>
+<section id="bind_cols" class="level4" data-number="2.3.1">
+<h4 data-number="2.3.1" class="anchored" data-anchor-id="bind_cols"><span class="header-section-number">2.3.1</span> bind_cols()</h4>
+<p><code>bind_cols()</code>は単純に2つのデータを横に並べるだけだ。</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb20"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb20-1"><a href="#cb20-1" aria-hidden="true" tabindex="-1"></a>df1_3 <span class="ot">&lt;-</span> <span class="fu">bind_cols</span>(df1, df3)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stderr">
+<pre><code>New names:
+• `Pref_code` -&gt; `Pref_code...2`
+• `Pref_code` -&gt; `Pref_code...4`</code></pre>
+</div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb22"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb22-1"><a href="#cb22-1" aria-hidden="true" tabindex="-1"></a>df1_3</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>      Pref Pref_code...2         food Pref_code...4 Pref_capital
+1 Hokkaido             1 ジンギスカン             3      Morioka
+2   Aomori             2       リンゴ             1      Sapporo
+3    Iwate             3   わんこそば             4       Sendai
+4   Miyagi             4       牛タン             2       Aomori
+       Famous_person
+1          大谷 翔平
+2            大泉 洋
+3 サンドウィッチマン
+4           ピコ太郎</code></pre>
+</div>
+</div>
+<p>df1とdf3の両者には、同じ変数名<code>Pref_code</code>が含まれており、<code>bind_cols()</code>の結果、自動的に<code>Pref_code...2, Pref_code...4</code>と変数名が変更されている。</p>
+</section>
+<section id="left_join" class="level4" data-number="2.3.2">
+<h4 data-number="2.3.2" class="anchored" data-anchor-id="left_join"><span class="header-section-number">2.3.2</span> left_join()</h4>
+<p>再度df1_3を見てみよう。</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb24"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb24-1"><a href="#cb24-1" aria-hidden="true" tabindex="-1"></a>df1_3</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>      Pref Pref_code...2         food Pref_code...4 Pref_capital
+1 Hokkaido             1 ジンギスカン             3      Morioka
+2   Aomori             2       リンゴ             1      Sapporo
+3    Iwate             3   わんこそば             4       Sendai
+4   Miyagi             4       牛タン             2       Aomori
+       Famous_person
+1          大谷 翔平
+2            大泉 洋
+3 サンドウィッチマン
+4           ピコ太郎</code></pre>
+</div>
+</div>
+<p>見ての通りこの表は誤っている。北海道の県庁所在地は盛岡市ではないし、ピコ太郎は宮城県出身でもない。<code>bind_cols()</code>は<strong>データを横に並べるだけ</strong>であり、適切に行同士を繋げてくれるわけではない。</p>
+<p>ここで役に立つのが<code>left_join()</code>という関数だ。</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb26"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb26-1"><a href="#cb26-1" aria-hidden="true" tabindex="-1"></a>新しいデータ名 <span class="ot">&lt;-</span> <span class="fu">left_join</span>(データ1, データ2, <span class="at">by =</span> <span class="st">"共通変数名"</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+<p><code>left_join()</code>の特徴は<code>by = "共通変数名"</code>の部分であり、ここで指定した<strong>共通変数名(キー変数)を基準として、データを結合させる</strong>。</p>
+<p>df1とdf3には共通の変数として都道府県コード<code>Pref_code</code>が存在する。<a href="#fn4" class="footnote-ref" id="fnref4" role="doc-noteref"><sup>4</sup></a> これをキー変数として<code>left_join()</code>を実行すれば、<code>Morioka</code>は岩手県の列へ、<code>ピコ太郎</code>は青森県の列へ適切に結合される。</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb27"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb27-1"><a href="#cb27-1" aria-hidden="true" tabindex="-1"></a>left_df1_3 <span class="ot">&lt;-</span> <span class="fu">left_join</span>(df1, df3, <span class="at">by =</span> <span class="st">"Pref_code"</span>)</span>
+<span id="cb27-2"><a href="#cb27-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb27-3"><a href="#cb27-3" aria-hidden="true" tabindex="-1"></a>left_df1_3</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>      Pref Pref_code         food Pref_capital      Famous_person
+1 Hokkaido         1 ジンギスカン      Sapporo            大泉 洋
+2   Aomori         2       リンゴ       Aomori           ピコ太郎
+3    Iwate         3   わんこそば      Morioka          大谷 翔平
+4   Miyagi         4       牛タン       Sendai サンドウィッチマン</code></pre>
+</div>
+</div>
+<p>1つ補足として、<code>left_join()</code>意外にも<code>right_join()</code>, <code>full_join()</code>といった<code>*_join</code>関数群が存在する。 詳細は次のWebサイトを参照して欲しい。<a href="https://www.jaysong.net/RBook/datahandling3.html">私たちのR 15 データハンドリング[拡張]</a></p>
+</section>
 </section>
 </section>
 
-</main>
+
+<div id="quarto-appendix" class="default"><section id="footnotes" class="footnotes footnotes-end-of-document" role="doc-endnotes"><h2 class="anchored quarto-appendix-heading">Footnotes</h2>
+
+<ol>
+<li id="fn1"><p>両者の関数には若干の違いがある。主に用いられるのは<code>read_csv()</code>の方だと思われるが、一応のために両者の違いを調べて把握しておくことをオススメする。<a href="#fnref1" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
+<li id="fn2"><p>前回資料において{tidyverse}というパッケージをダウンロードした際に、{readr}も一緒にダウンロードされている。<a href="#fnref2" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
+<li id="fn3"><p><code>bind_rows()</code>は変数名がずれていても実行されてエラーが出ない。そのため、変数名の誤りには特に注意が必要だ。同じ役割を持つ他の関数として、<code>rbind()</code>という関数も存在し、こちらはエラーが出力される。<a href="#fnref3" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
+<li id="fn4"><p>都道府県コードは国によって定められた2桁の数値コード(01, 02, …, 47)として、様々な都道府県別データに含まれており、この変数をキー変数として用いるのが有用である。<a href="#fnref4" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
+</ol>
+</section></div></main>
 <!-- /main column -->
 <script id="quarto-html-after-body" type="application/javascript">
   window.document.addEventListener("DOMContentLoaded", function (event) {

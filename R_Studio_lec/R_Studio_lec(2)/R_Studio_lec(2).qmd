@@ -3,12 +3,207 @@ title: "R Studioで計量経済分析(2)"
 author: "成田 慶之"
 date: today
 format: html
+toc: true
+toc-depth: 3
+number-sections: true
 ---
+
+ここでは、**データの読み込み**、**データの結合**について簡単に紹介する。
 
 ## データの読み込み
 
-卒業研究等で分析を行なう際、政府統計などのWebサイトからcsvファイルやexcelファイルのデータをダウンロードし、それらをR上に読み込んで分析する。
+前回の[R Studioで計量経済分析(1)](https://ochunchun.github.io/Aizawa_seminar_TA/R_Studio_lec/R_Studio_lec(1)/R_Studio_lec(1).html)では、パッケージ{wooldridge}にあるデータセットを用いてOLS回帰分析を実行した。
+
+しかし、皆さんが卒業研究などで分析を行なう際、恐らく全ての学生は政府統計などのWebサイトからデータをダウンロードし、それらをRに**読み込んで**分析を行なう。
+
+ここではその**読み込みの方法**を紹介する。
+
+### ファイルのパス取得
+
+Webサイトでデータを何らかのファイルに保存し、Rで呼び出すとき、**ファイルのパス**
+と言うものが必要になる。これはそのデータがパソコン内のどこにあるかを示す住所のようなもので、`"C:/Users/narita yoshiyuki/Desktop/相澤ゼミ_資料/TA/..."`のような形になっている。
+
+パスの取得方法は簡単で、ファイル→対象のデータを右クリック→パスのコピーで取得可能だ。
+
+![パス取得方法](R_Studio_lec(2).png)
 
 ### csvファイルの読み込み
 
-csvファイルを読み込む際に用いる関数は`read.csv()`
+csvファイルを読み込む際に用いる関数は`read.csv(ファイルのパス)`若しくは`read_csv(ファイルのパス)`を用いる。[^1]
+
+[^1]:両者の関数には若干の違いがある。主に用いられるのは`read_csv()`の方だと思われるが、一応のために両者の違いを調べて把握しておくことをオススメする。
+
+ここでは、[主要統計 - OECD](https://www.oecd.org/en/data.html)からダウンロードした、各国の平均寿命データを読み込んでみる。
+
+```{r}
+#| cache: true
+# 何らかの変数に代入する形で読み込む(read.csv())
+life_exp <- read.csv("C:/Users/narita yoshiyuki/Desktop/相澤ゼミ_資料/TA/Aizawa_seminar_TA/R_Studio_lec/data/OECD.ELS.HD,DSD_HEALTH_STAT@DF_HEALTH_STATUS,+.A.LFEXP.Y.Y0.........csv")
+
+# 読み込んだデータを表示してみる(無視してOK)
+head(life_exp)
+```
+
+今度は`read_csv()`を用いて読み込む。`read_csv()`は{readr}というパッケージ含まれている。[^2]
+
+[^2]:前回資料において{tidyverse}というパッケージをダウンロードした際に、{readr}も一緒にダウンロードされている。
+
+```{r}
+#| cache: true
+#| eval: false
+#| label: load_readr
+# readrの読み込み
+library(readr)
+```
+
+```{r}
+#| cache: true
+#| dependson: "load_readr"
+# データの読み込み
+life_exp_2 <- read_csv("C:/Users/narita yoshiyuki/Desktop/相澤ゼミ_資料/TA/Aizawa_seminar_TA/R_Studio_lec/data/OECD.ELS.HD,DSD_HEALTH_STAT@DF_HEALTH_STATUS,+.A.LFEXP.Y.Y0.........csv")
+
+# データを表示してみる
+life_exp_2
+```
+
+### excelファイルの読み込み
+
+excelファイルの読み込みは{readxl}パッケージの`read.xlsx(ファイルのパス)`を用いて行なう。
+
+```{r}
+#| eval: false
+# readxlパッケージのダウンロード
+install.packages("readxl")
+```
+
+```{r}
+#| cache: true
+# readxlパッケージの読み込み
+library(readxl)
+```
+
+ここでは令和5年東京都国・地域別外国人旅行者行動特性調査のexcelデータを読み込む。
+
+```{r}
+#| cache: true
+Tokyo_r5 <- read_xlsx("C:/Users/narita yoshiyuki/Desktop/相澤ゼミ_資料/TA/Aizawa_seminar_TA/R_Studio_lec/data/【R5】国・地域別外国人旅行者行動特性調査.xlsx")
+
+# 読み込んだデータを表示してみる
+Tokyo_r5
+```
+
+## データの結合
+
+Webサイト上のデータを分析する場合、1つのデータ・サイト上に欲しい情報が全て入っていることは少ないと思われる。そこで我々は複数のWebサイト・データから情報を集めて分析を行なうことになるが、最終的にそれらのデータを1つに**結合**させなければならない。
+
+そのようなデータの結合をRで行なうための関数が複数存在する。
+
+### 事前準備
+
+本節において例として用いるデータを事前に作成しておく。
+
+```{r}
+#| cache: true
+#| label: data_frame
+
+df1 <- data.frame(
+  Pref = c("Hokkaido","Aomori", "Iwate", "Miyagi"),
+  Pref_code = 1:4,
+  food = c("ジンギスカン", "リンゴ", "わんこそば", "牛タン"))
+
+df1
+
+df2 <- data.frame(
+  Pref = c("Akita", "Yamagata", "Fukushima"),
+  Pref_code = 5:7,
+  food = c("きりたんぽ", "さくらんぼ", "喜多方ラーメン"))
+
+df2
+
+df3 <- data.frame(
+  Pref_code = c(3, 1, 4, 2),
+  Pref_capital = c("Morioka", "Sapporo", "Sendai", "Aomori"),
+  Famous_person = c("大谷 翔平", "大泉 洋", "サンドウィッチマン", "ピコ太郎"))
+
+df3
+
+```
+
+### 縦に合体させる(行の結合)
+
+2つのデータを縦に結合する(行同士を繋げる)関数は{dplyr}パッケージの`bind_rows(データ1, データ2, ...)`が存在する。
+
+ここでは、上記で作ったdf1とdf2を結合させてみる。
+
+```{r}
+#| cache: true
+#| label: dplyr
+# dplyrパッケージを読み込む
+library(dplyr)
+# 上記のデータを結合してみる
+df1_2 <- bind_rows(df1, df2)
+
+df1_2
+
+```
+
+ここで重要な点として、合体させる2つのデータは**同じ変数名**を持つ必要がある。今回の例では`Pref, Pref_code, food`という3つの変数しかないため分かりやすいが、Web上データでは変数が10個や100個となるものが普通に存在するため、注意が必要だ。[^3]
+
+[^3]: `bind_rows()`は変数名がずれていても実行されてエラーが出ない。そのため、変数名の誤りには特に注意が必要だ。同じ役割を持つ他の関数として、`rbind()`という関数も存在し、こちらはエラーが出力される。
+
+### 横に合体させる(列の結合)
+
+横に結合させる(列を繋げる)関数として、{dplyr}パッケージの`bind_cols()`や`left_join()`が挙げられる。
+
+ここでは先ほど作ったデータのdf1とdf3を結合させる。
+
+#### bind_cols()
+
+`bind_cols()`は単純に2つのデータを横に並べるだけだ。
+
+```{r}
+#| cache: true
+#| dependson: ["dplyr", "data_frame"]
+df1_3 <- bind_cols(df1, df3)
+
+df1_3
+```
+
+df1とdf3の両者には、同じ変数名`Pref_code`が含まれており、`bind_cols()`の結果、自動的に`Pref_code...2, Pref_code...4`と変数名が変更されている。 
+
+#### left_join()
+
+再度df1_3を見てみよう。
+
+```{r}
+#| cache: true
+df1_3
+```
+
+見ての通りこの表は誤っている。北海道の県庁所在地は盛岡市ではないし、ピコ太郎は宮城県出身でもない。`bind_cols()`は**データを横に並べるだけ**であり、適切に行同士を繋げてくれるわけではない。
+
+ここで役に立つのが`left_join()`という関数だ。
+
+```{r}
+#| eval: false
+
+新しいデータ名 <- left_join(データ1, データ2, by = "共通変数名")
+```
+
+`left_join()`の特徴は`by = "共通変数名"`の部分であり、ここで指定した**共通変数名(キー変数)を基準として、データを結合させる**。
+
+df1とdf3には共通の変数として都道府県コード`Pref_code`が存在する。[^4] これをキー変数として`left_join()`を実行すれば、`Morioka`は岩手県の列へ、`ピコ太郎`は青森県の列へ適切に結合される。
+
+```{r}
+#| dependson: ["dplyr", "data_frame"]
+#| cache: true
+
+left_df1_3 <- left_join(df1, df3, by = "Pref_code")
+
+left_df1_3
+```
+
+[^4]: 都道府県コードは国によって定められた2桁の数値コード(01, 02, ..., 47)として、様々な都道府県別データに含まれており、この変数をキー変数として用いるのが有用である。
+
+1つ補足として、`left_join()`意外にも`right_join()`, `full_join()`といった`*_join`関数群が存在する。
+詳細は次のWebサイトを参照して欲しい。[私たちのR 15 データハンドリング\[拡張\]](https://www.jaysong.net/RBook/datahandling3.html)
