@@ -1,0 +1,853 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
+
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.8.26">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+<meta name="author" content="成田 慶之">
+<meta name="dcterms.date" content="2026-01-01">
+
+<title>R Studioで計量経済分析(3)</title>
+<style>
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: min(4vw, 1.5em);}
+div.column{flex: auto; overflow-x: auto;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
+  vertical-align: middle;
+}
+/* CSS for syntax highlighting */
+html { -webkit-text-size-adjust: 100%; }
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+  }
+pre.numberSource { margin-left: 3em;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+</style>
+
+
+<script src="R_Studio_lec(3)_files/libs/clipboard/clipboard.min.js"></script>
+<script src="R_Studio_lec(3)_files/libs/quarto-html/quarto.js" type="module"></script>
+<script src="R_Studio_lec(3)_files/libs/quarto-html/tabsets/tabsets.js" type="module"></script>
+<script src="R_Studio_lec(3)_files/libs/quarto-html/axe/axe-check.js" type="module"></script>
+<script src="R_Studio_lec(3)_files/libs/quarto-html/popper.min.js"></script>
+<script src="R_Studio_lec(3)_files/libs/quarto-html/tippy.umd.min.js"></script>
+<script src="R_Studio_lec(3)_files/libs/quarto-html/anchor.min.js"></script>
+<link href="R_Studio_lec(3)_files/libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="R_Studio_lec(3)_files/libs/quarto-html/quarto-syntax-highlighting-587c61ba64f3a5504c4d52d930310e48.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<script src="R_Studio_lec(3)_files/libs/bootstrap/bootstrap.min.js"></script>
+<link href="R_Studio_lec(3)_files/libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="R_Studio_lec(3)_files/libs/bootstrap/bootstrap-9e3ffae467580fdb927a41352e75a2e0.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
+
+  <script src="https://cdnjs.cloudflare.com/polyfill/v3/polyfill.min.js?features=es6"></script>
+  <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml-full.js" type="text/javascript"></script>
+
+<script type="text/javascript">
+const typesetMath = (el) => {
+  if (window.MathJax) {
+    // MathJax Typeset
+    window.MathJax.typeset([el]);
+  } else if (window.katex) {
+    // KaTeX Render
+    var mathElements = el.getElementsByClassName("math");
+    var macros = [];
+    for (var i = 0; i < mathElements.length; i++) {
+      var texText = mathElements[i].firstChild;
+      if (mathElements[i].tagName == "SPAN" && texText && texText.data) {
+        window.katex.render(texText.data, mathElements[i], {
+          displayMode: mathElements[i].classList.contains('display'),
+          throwOnError: false,
+          macros: macros,
+          fleqn: false
+        });
+      }
+    }
+  }
+}
+window.Quarto = {
+  typesetMath
+};
+</script>
+
+</head>
+
+<body class="quarto-light">
+
+<div id="quarto-content" class="page-columns page-rows-contents page-layout-article">
+<div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
+  <nav id="TOC" role="doc-toc" class="toc-active">
+    <h2 id="toc-title">Table of contents</h2>
+   
+  <ul>
+  <li><a href="#分析結果の出力" id="toc-分析結果の出力" class="nav-link active" data-scroll-target="#分析結果の出力"><span class="header-section-number">1</span> 分析結果の出力</a>
+  <ul class="collapse">
+  <li><a href="#事前準備" id="toc-事前準備" class="nav-link" data-scroll-target="#事前準備"><span class="header-section-number">1.1</span> 事前準備</a></li>
+  <li><a href="#stargazer" id="toc-stargazer" class="nav-link" data-scroll-target="#stargazer"><span class="header-section-number">1.2</span> stargazer</a></li>
+  <li><a href="#modelsummary" id="toc-modelsummary" class="nav-link" data-scroll-target="#modelsummary"><span class="header-section-number">1.3</span> modelsummary</a></li>
+  <li><a href="#レポートなどに記載する方法" id="toc-レポートなどに記載する方法" class="nav-link" data-scroll-target="#レポートなどに記載する方法"><span class="header-section-number">1.4</span> レポートなどに記載する方法</a></li>
+  </ul></li>
+  </ul>
+</nav>
+</div>
+<main class="content" id="quarto-document-content">
+
+<header id="title-block-header" class="quarto-title-block default">
+<div class="quarto-title">
+<h1 class="title">R Studioで計量経済分析(3)</h1>
+</div>
+
+
+
+<div class="quarto-title-meta">
+
+    <div>
+    <div class="quarto-title-meta-heading">Author</div>
+    <div class="quarto-title-meta-contents">
+             <p>成田 慶之 </p>
+          </div>
+  </div>
+    
+    <div>
+    <div class="quarto-title-meta-heading">Published</div>
+    <div class="quarto-title-meta-contents">
+      <p class="date">January 1, 2026</p>
+    </div>
+  </div>
+  
+    
+  </div>
+  
+
+
+</header>
+
+
+<p>本章では、<a href="https://ochunchun.github.io/Aizawa_seminar_TA/R_Studio_lec/R_Studio_lec(1)/R_Studio_lec(1).html">R Studioで計量経済分析(1)</a>で紹介した、OLS回帰分析について、見やすい結果の出力・追加の分析方法をより詳細に説明する。</p>
+<section id="分析結果の出力" class="level2" data-number="1">
+<h2 data-number="1" class="anchored" data-anchor-id="分析結果の出力"><span class="header-section-number">1</span> 分析結果の出力</h2>
+<p><a href="https://ochunchun.github.io/Aizawa_seminar_TA/R_Studio_lec/R_Studio_lec(1)/R_Studio_lec(1).html">R Studioで計量経済分析(1)</a>では<code>summary()</code>関数を用いて結果を出力したが、あまり見やすいものではなかった。</p>
+<p>ここでは<code>summary()</code>以外で、結果を見やすく出力する関数について紹介する。</p>
+<section id="事前準備" class="level3" data-number="1.1">
+<h3 data-number="1.1" class="anchored" data-anchor-id="事前準備"><span class="header-section-number">1.1</span> 事前準備</h3>
+<p>この節での本題は<strong>結果の出力</strong>であるため、先にOLS回帰分析を済ませてしまおう。</p>
+<p>今回はパッケージ{wooldridge}のmrozというデータから、以下2つのミンサー型賃金関数を推定する。</p>
+<p><span class="math display">\[
+\begin{align}
+wage_{i} &amp;= \beta_{0} + \beta_{1}educ_{i} + \beta_{2}exper_{i} + u_{i} \tag{1}\\
+wage_{i} &amp;= \beta_{0} + \beta_{1}educ_{i}  + \beta_{2}exper_{i} + \beta_{3}exper_{i}^2 + u_{i} \tag{2}
+\end{align}
+\]</span></p>
+<p><span class="math inline">\(i\)</span>は各標本個体を示しており、<span class="math inline">\(u_{i}\)</span>は誤差項である。 各変数について、<span class="math inline">\(wage_{i}\)</span> (時間当たり賃金), <span class="math inline">\(educ_{i}\)</span> (教育年数), <span class="math inline">\(exper_{i}\)</span> (労働市場での経験年数)を示している。(1)と異なり、(2)の賃金関数には<span class="math inline">\(exper_{i}\)</span>の2乗項を含めた。</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="co"># wooldridgeを読み込む</span></span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(wooldridge)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb2"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="co"># OLS回帰分析を実行し、mincer_1, mincer_2に代入する</span></span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a>mincer_1 <span class="ot">&lt;-</span> <span class="fu">lm</span>(wage <span class="sc">~</span> educ <span class="sc">+</span> exper, <span class="at">data =</span> mroz)</span>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a>mincer_2 <span class="ot">&lt;-</span> <span class="fu">lm</span>(wage <span class="sc">~</span> educ <span class="sc">+</span> exper <span class="sc">+</span> expersq, <span class="at">data =</span> mroz)</span>
+<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a><span class="co"># 結果を簡単に出力</span></span>
+<span id="cb2-6"><a href="#cb2-6" aria-hidden="true" tabindex="-1"></a>mincer_1</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>
+Call:
+lm(formula = wage ~ educ + exper, data = mroz)
+
+Coefficients:
+(Intercept)         educ        exper  
+   -2.43169      0.49663      0.02474  </code></pre>
+</div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb4"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a>mincer_2</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>
+Call:
+lm(formula = wage ~ educ + exper + expersq, data = mroz)
+
+Coefficients:
+(Intercept)         educ        exper      expersq  
+  -2.488019     0.495710     0.036708    -0.000375  </code></pre>
+</div>
+</div>
+</section>
+<section id="stargazer" class="level3" data-number="1.2">
+<h3 data-number="1.2" class="anchored" data-anchor-id="stargazer"><span class="header-section-number">1.2</span> stargazer</h3>
+<p>始めに紹介するのは<code>stargazer()</code>という関数である。パッケージ{stargazer}に含まれており、非常に見やすい分析結果を出力してくれる。なにより、複数の回帰分析結果を表示できることが<code>summary()</code>とは明確に異なっている。</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb6"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="fu">stargazer</span>(回帰モデル(複数個OK), <span class="at">type =</span> 出力設定, ...)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+<p>回帰モデル(mincer_1など)は必ず示さなければいけない。後ろの<code>type =</code>について、詳細は後で話すが今回は<code>type = "text"</code>と入力する。</p>
+<p>早速<code>stargazer()</code>で先ほどの分析結果を出力してみよう。</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb7"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="co"># stargazerのインストール</span></span>
+<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a><span class="fu">install.packages</span>(<span class="st">"stargazer"</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb8"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="co"># stargazerの読み込み</span></span>
+<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(stargazer)</span>
+<span id="cb8-3"><a href="#cb8-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb8-4"><a href="#cb8-4" aria-hidden="true" tabindex="-1"></a><span class="co"># 先ほどのmincer_1, mincer_2をstargazerで出力する</span></span>
+<span id="cb8-5"><a href="#cb8-5" aria-hidden="true" tabindex="-1"></a><span class="fu">stargazer</span>(mincer_1, mincer_2, <span class="at">type =</span> <span class="st">"text"</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>
+===================================================================
+                                  Dependent variable:              
+                    -----------------------------------------------
+                                         wage                      
+                              (1)                     (2)          
+-------------------------------------------------------------------
+educ                       0.497***                0.496***        
+                            (0.066)                 (0.066)        
+                                                                   
+exper                        0.025                   0.037         
+                            (0.019)                 (0.062)        
+                                                                   
+expersq                                             -0.0004        
+                                                    (0.002)        
+                                                                   
+Constant                   -2.432***               -2.488***       
+                            (0.885)                 (0.928)        
+                                                                   
+-------------------------------------------------------------------
+Observations                  428                     428          
+R2                           0.121                   0.121         
+Adjusted R2                  0.116                   0.114         
+Residual Std. Error    3.112 (df = 425)        3.115 (df = 424)    
+F Statistic         29.130*** (df = 2; 425) 19.390*** (df = 3; 424)
+===================================================================
+Note:                                   *p&lt;0.1; **p&lt;0.05; ***p&lt;0.01</code></pre>
+</div>
+</div>
+<p><code>summary()</code>と比較して、かなり見やすくなった(と思う)。</p>
+<p>表の中身について何点か説明しておく。</p>
+<ul>
+<li>各説明変数(<code>educ</code>, <code>exper</code>, <code>expersq</code>, <code>Constant</code>)の右側にある値が推定された係数値を示している。<a href="#fn1" class="footnote-ref" id="fnref1" role="doc-noteref"><sup>1</sup></a></li>
+<li>推定された係数値の下に括弧で囲まれた値があるが、これは<u>標準誤差</u>を示している。</li>
+<li>表の下側に関して、標本の観測数<code>Observation</code>や決定係数<code>R2</code>が示されている。(それぞれの役割・意味については各自で勉強して欲しい。)</li>
+<li><code>summary()</code>の時と＊の表し方が若干異なっている。
+<ul>
+<li><code>summary()</code>: ＊で5%。＊＊で1%、＊＊＊で0.1%水準で統計的に有意</li>
+<li><code>stargazer()</code>: ＊10%、＊＊で5%、＊＊＊で1%水準で統計的に有意<a href="#fn2" class="footnote-ref" id="fnref2" role="doc-noteref"><sup>2</sup></a></li>
+</ul></li>
+</ul>
+<p>先ほど説明を割愛した<code>type =</code>について、この引数は表の出力方法を示すものである。<code>type = "text"</code>はそのままテキストとして出力する設定で、他のタイプとして<code>"latex"</code> (LaTeXという文書作成ソフトで出力するための設定)、<code>"html"</code> (HTMLで出力するための設定)が存在する。<a href="#fn3" class="footnote-ref" id="fnref3" role="doc-noteref"><sup>3</sup></a></p>
+</section>
+<section id="modelsummary" class="level3" data-number="1.3">
+<h3 data-number="1.3" class="anchored" data-anchor-id="modelsummary"><span class="header-section-number">1.3</span> modelsummary</h3>
+<p>続いて紹介するのは<code>modelsummary()</code>という関数である。{modelsummary}パッケージに含まれており、ChatGPT曰く<code>modelsummary()</code>&gt;&gt;&gt;<code>stagazer()</code>らしいので、大学院進学などを踏まえている学生にとっては、こちらの方が望ましい関数だと考えられる。</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb10"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a><span class="fu">modelsummary</span>(<span class="at">models =</span> <span class="fu">list</span>(回帰モデル1, 回帰モデル2, ...), ...)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+<p>ここでも同様に、回帰モデルを示すことが最低限必要である。 <code>stargazer()</code>もそうだが、<code>modelsummary()</code>においては<code>models =</code>の他に大量の詳細オプションが存在するため、適宜確認することが望ましい。<a href="#fn4" class="footnote-ref" id="fnref4" role="doc-noteref"><sup>4</sup></a></p>
+<p>早速<code>modelsummary()</code>を用いて結果を表示してみよう！！</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb11"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a><span class="co"># modelsummaryのインストール</span></span>
+<span id="cb11-2"><a href="#cb11-2" aria-hidden="true" tabindex="-1"></a><span class="fu">install.packages</span>(<span class="st">"modelsummary"</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb12"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a><span class="co"># modelsummaryの読み込み</span></span>
+<span id="cb12-2"><a href="#cb12-2" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(modelsummary)</span>
+<span id="cb12-3"><a href="#cb12-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb12-4"><a href="#cb12-4" aria-hidden="true" tabindex="-1"></a><span class="co"># 結果の出力</span></span>
+<span id="cb12-5"><a href="#cb12-5" aria-hidden="true" tabindex="-1"></a><span class="fu">modelsummary</span>(</span>
+<span id="cb12-6"><a href="#cb12-6" aria-hidden="true" tabindex="-1"></a>  <span class="at">models =</span> <span class="fu">list</span>(mincer_1, mincer_2),</span>
+<span id="cb12-7"><a href="#cb12-7" aria-hidden="true" tabindex="-1"></a>  <span class="at">stars =</span> <span class="fu">c</span>(<span class="st">'*'</span> <span class="ot">=</span> .<span class="dv">1</span>, <span class="st">'**'</span> <span class="ot">=</span> .<span class="dv">05</span>, <span class="st">'***'</span> <span class="ot">=</span> .<span class="dv">01</span>), <span class="co"># ＊の基準を設定して表示する</span></span>
+<span id="cb12-8"><a href="#cb12-8" aria-hidden="true" tabindex="-1"></a>  <span class="at">fmt =</span> <span class="dv">4</span>, <span class="co"># 結果の小数点をどこまで記述するかを指定</span></span>
+<span id="cb12-9"><a href="#cb12-9" aria-hidden="true" tabindex="-1"></a>  <span class="at">gof_omit =</span> <span class="st">'RMSE|AIC|BIC|Log.Lik.'</span>) <span class="co"># 増長な統計量を表から取り除く</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output-display">
+<!-- preamble start -->
+
+    <script src="https://cdn.jsdelivr.net/gh/vincentarelbundock/tinytable@main/inst/tinytable.js"></script>
+
+    <script>
+      // Create table-specific functions using external factory
+      const tableFns_ig7uyzav7pyzck1kbo89 = TinyTable.createTableFunctions("tinytable_ig7uyzav7pyzck1kbo89");
+      // tinytable span after
+      window.addEventListener('load', function () {
+          var cellsToStyle = [
+            // tinytable style arrays after
+          { positions: [ { i: '12', j: 2 }, { i: '12', j: 3 } ], css_id: 'tinytable_css_nspeu7kq9v9bzopx358s',}, 
+          { positions: [ { i: '8', j: 2 }, { i: '8', j: 3 } ], css_id: 'tinytable_css_yvqwqa6uax75b1sw1e6m',}, 
+          { positions: [ { i: '1', j: 2 }, { i: '2', j: 2 }, { i: '3', j: 2 }, { i: '4', j: 2 }, { i: '5', j: 2 }, { i: '6', j: 2 }, { i: '7', j: 2 }, { i: '9', j: 2 }, { i: '10', j: 2 }, { i: '11', j: 2 }, { i: '1', j: 3 }, { i: '2', j: 3 }, { i: '3', j: 3 }, { i: '4', j: 3 }, { i: '5', j: 3 }, { i: '6', j: 3 }, { i: '7', j: 3 }, { i: '9', j: 3 }, { i: '10', j: 3 }, { i: '11', j: 3 } ], css_id: 'tinytable_css_lbxiir3l1dk2x4b91pwt',}, 
+          { positions: [ { i: '0', j: 2 }, { i: '0', j: 3 } ], css_id: 'tinytable_css_jrd9jc8ban65uovw7w1f',}, 
+          { positions: [ { i: '12', j: 1 } ], css_id: 'tinytable_css_1hbb2wqe1ddztyp7b3tk',}, 
+          { positions: [ { i: '8', j: 1 } ], css_id: 'tinytable_css_dncnluo49tmll2npajqj',}, 
+          { positions: [ { i: '1', j: 1 }, { i: '2', j: 1 }, { i: '3', j: 1 }, { i: '4', j: 1 }, { i: '5', j: 1 }, { i: '6', j: 1 }, { i: '7', j: 1 }, { i: '9', j: 1 }, { i: '10', j: 1 }, { i: '11', j: 1 } ], css_id: 'tinytable_css_62pu1xx3nls0aasrej7g',}, 
+          { positions: [ { i: '0', j: 1 } ], css_id: 'tinytable_css_b01ieixigv9o13dc4vh5',}, 
+          ];
+
+          // Loop over the arrays to style the cells
+          cellsToStyle.forEach(function (group) {
+              group.positions.forEach(function (cell) {
+                  tableFns_ig7uyzav7pyzck1kbo89.styleCell(cell.i, cell.j, group.css_id);
+              });
+          });
+      });
+    </script>
+
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/vincentarelbundock/tinytable@main/inst/tinytable.css">
+    <style>
+    /* tinytable css entries after */
+    #tinytable_ig7uyzav7pyzck1kbo89 td.tinytable_css_nspeu7kq9v9bzopx358s, #tinytable_ig7uyzav7pyzck1kbo89 th.tinytable_css_nspeu7kq9v9bzopx358s {  position: relative; --border-bottom: 1; --border-left: 0; --border-right: 0; --border-top: 0; --line-color-bottom: black; --line-color-left: black; --line-color-right: black; --line-color-top: black; --line-width-bottom: 0.1em; --line-width-left: 0.1em; --line-width-right: 0.1em; --line-width-top: 0.1em; --trim-bottom-left: 0%; --trim-bottom-right: 0%; --trim-left-bottom: 0%; --trim-left-top: 0%; --trim-right-bottom: 0%; --trim-right-top: 0%; --trim-top-left: 0%; --trim-top-right: 0%; ; text-align: center }
+    #tinytable_ig7uyzav7pyzck1kbo89 td.tinytable_css_yvqwqa6uax75b1sw1e6m, #tinytable_ig7uyzav7pyzck1kbo89 th.tinytable_css_yvqwqa6uax75b1sw1e6m {  position: relative; --border-bottom: 1; --border-left: 0; --border-right: 0; --border-top: 0; --line-color-bottom: black; --line-color-left: black; --line-color-right: black; --line-color-top: black; --line-width-bottom: 0.05em; --line-width-left: 0.1em; --line-width-right: 0.1em; --line-width-top: 0.1em; --trim-bottom-left: 0%; --trim-bottom-right: 0%; --trim-left-bottom: 0%; --trim-left-top: 0%; --trim-right-bottom: 0%; --trim-right-top: 0%; --trim-top-left: 0%; --trim-top-right: 0%; ; text-align: center }
+    #tinytable_ig7uyzav7pyzck1kbo89 td.tinytable_css_lbxiir3l1dk2x4b91pwt, #tinytable_ig7uyzav7pyzck1kbo89 th.tinytable_css_lbxiir3l1dk2x4b91pwt { text-align: center }
+    #tinytable_ig7uyzav7pyzck1kbo89 td.tinytable_css_jrd9jc8ban65uovw7w1f, #tinytable_ig7uyzav7pyzck1kbo89 th.tinytable_css_jrd9jc8ban65uovw7w1f {  position: relative; --border-bottom: 1; --border-left: 0; --border-right: 0; --border-top: 1; --line-color-bottom: black; --line-color-left: black; --line-color-right: black; --line-color-top: black; --line-width-bottom: 0.05em; --line-width-left: 0.1em; --line-width-right: 0.1em; --line-width-top: 0.1em; --trim-bottom-left: 0%; --trim-bottom-right: 0%; --trim-left-bottom: 0%; --trim-left-top: 0%; --trim-right-bottom: 0%; --trim-right-top: 0%; --trim-top-left: 0%; --trim-top-right: 0%; ; text-align: center }
+    #tinytable_ig7uyzav7pyzck1kbo89 td.tinytable_css_1hbb2wqe1ddztyp7b3tk, #tinytable_ig7uyzav7pyzck1kbo89 th.tinytable_css_1hbb2wqe1ddztyp7b3tk {  position: relative; --border-bottom: 1; --border-left: 0; --border-right: 0; --border-top: 0; --line-color-bottom: black; --line-color-left: black; --line-color-right: black; --line-color-top: black; --line-width-bottom: 0.1em; --line-width-left: 0.1em; --line-width-right: 0.1em; --line-width-top: 0.1em; --trim-bottom-left: 0%; --trim-bottom-right: 0%; --trim-left-bottom: 0%; --trim-left-top: 0%; --trim-right-bottom: 0%; --trim-right-top: 0%; --trim-top-left: 0%; --trim-top-right: 0%; ; text-align: left }
+    #tinytable_ig7uyzav7pyzck1kbo89 td.tinytable_css_dncnluo49tmll2npajqj, #tinytable_ig7uyzav7pyzck1kbo89 th.tinytable_css_dncnluo49tmll2npajqj {  position: relative; --border-bottom: 1; --border-left: 0; --border-right: 0; --border-top: 0; --line-color-bottom: black; --line-color-left: black; --line-color-right: black; --line-color-top: black; --line-width-bottom: 0.05em; --line-width-left: 0.1em; --line-width-right: 0.1em; --line-width-top: 0.1em; --trim-bottom-left: 0%; --trim-bottom-right: 0%; --trim-left-bottom: 0%; --trim-left-top: 0%; --trim-right-bottom: 0%; --trim-right-top: 0%; --trim-top-left: 0%; --trim-top-right: 0%; ; text-align: left }
+    #tinytable_ig7uyzav7pyzck1kbo89 td.tinytable_css_62pu1xx3nls0aasrej7g, #tinytable_ig7uyzav7pyzck1kbo89 th.tinytable_css_62pu1xx3nls0aasrej7g { text-align: left }
+    #tinytable_ig7uyzav7pyzck1kbo89 td.tinytable_css_b01ieixigv9o13dc4vh5, #tinytable_ig7uyzav7pyzck1kbo89 th.tinytable_css_b01ieixigv9o13dc4vh5 {  position: relative; --border-bottom: 1; --border-left: 0; --border-right: 0; --border-top: 1; --line-color-bottom: black; --line-color-left: black; --line-color-right: black; --line-color-top: black; --line-width-bottom: 0.05em; --line-width-left: 0.1em; --line-width-right: 0.1em; --line-width-top: 0.1em; --trim-bottom-left: 0%; --trim-bottom-right: 0%; --trim-left-bottom: 0%; --trim-left-top: 0%; --trim-right-bottom: 0%; --trim-right-top: 0%; --trim-top-left: 0%; --trim-top-right: 0%; ; text-align: left }
+    </style>
+    <div class="container">
+      <table class="tinytable" id="tinytable_ig7uyzav7pyzck1kbo89" style="width: auto; margin-left: auto; margin-right: auto;" data-quarto-disable-processing="true">
+        
+        <thead>
+              <tr>
+                <th scope="col" data-row="0" data-col="1"> </th>
+                <th scope="col" data-row="0" data-col="2">(1)</th>
+                <th scope="col" data-row="0" data-col="3">(2)</th>
+              </tr>
+        </thead>
+        <tfoot><tr><td colspan="3">* p &lt; 0.1, ** p &lt; 0.05, *** p &lt; 0.01</td></tr></tfoot>
+        <tbody>
+                <tr>
+                  <td data-row="1" data-col="1">(Intercept)</td>
+                  <td data-row="1" data-col="2">-2.4317***</td>
+                  <td data-row="1" data-col="3">-2.4880***</td>
+                </tr>
+                <tr>
+                  <td data-row="2" data-col="1"></td>
+                  <td data-row="2" data-col="2">(0.8855)</td>
+                  <td data-row="2" data-col="3">(0.9285)</td>
+                </tr>
+                <tr>
+                  <td data-row="3" data-col="1">educ</td>
+                  <td data-row="3" data-col="2">0.4966***</td>
+                  <td data-row="3" data-col="3">0.4957***</td>
+                </tr>
+                <tr>
+                  <td data-row="4" data-col="1"></td>
+                  <td data-row="4" data-col="2">(0.0659)</td>
+                  <td data-row="4" data-col="3">(0.0661)</td>
+                </tr>
+                <tr>
+                  <td data-row="5" data-col="1">exper</td>
+                  <td data-row="5" data-col="2">0.0247</td>
+                  <td data-row="5" data-col="3">0.0367</td>
+                </tr>
+                <tr>
+                  <td data-row="6" data-col="1"></td>
+                  <td data-row="6" data-col="2">(0.0187)</td>
+                  <td data-row="6" data-col="3">(0.0616)</td>
+                </tr>
+                <tr>
+                  <td data-row="7" data-col="1">expersq</td>
+                  <td data-row="7" data-col="2"></td>
+                  <td data-row="7" data-col="3">-0.0004</td>
+                </tr>
+                <tr>
+                  <td data-row="8" data-col="1"></td>
+                  <td data-row="8" data-col="2"></td>
+                  <td data-row="8" data-col="3">(0.0018)</td>
+                </tr>
+                <tr>
+                  <td data-row="9" data-col="1">Num.Obs.</td>
+                  <td data-row="9" data-col="2">428</td>
+                  <td data-row="9" data-col="3">428</td>
+                </tr>
+                <tr>
+                  <td data-row="10" data-col="1">R2</td>
+                  <td data-row="10" data-col="2">0.121</td>
+                  <td data-row="10" data-col="3">0.121</td>
+                </tr>
+                <tr>
+                  <td data-row="11" data-col="1">R2 Adj.</td>
+                  <td data-row="11" data-col="2">0.116</td>
+                  <td data-row="11" data-col="3">0.114</td>
+                </tr>
+                <tr>
+                  <td data-row="12" data-col="1">F</td>
+                  <td data-row="12" data-col="2">29.130</td>
+                  <td data-row="12" data-col="3">19.390</td>
+                </tr>
+        </tbody>
+      </table>
+    </div>
+<!-- hack to avoid NA insertion in last line -->
+</div>
+</div>
+<p><code>stargazer()</code>とほぼ同じ形の分析結果が出力された。括弧内の値や＊の定義なども先ほどの<code>stargazer()</code>による出力結果と合致しているため、適宜確認して欲しい。</p>
+</section>
+<section id="レポートなどに記載する方法" class="level3" data-number="1.4">
+<h3 data-number="1.4" class="anchored" data-anchor-id="レポートなどに記載する方法"><span class="header-section-number">1.4</span> レポートなどに記載する方法</h3>
+<p>ここまでの説明で分析結果を見やすくする方法は理解できたと思う。では実際にWordやLaTeX等の文書作成ソフトに載せる方法を簡単に説明しよう。</p>
+<section id="stargazerでの記載方法" class="level4" data-number="1.4.1">
+<h4 data-number="1.4.1" class="anchored" data-anchor-id="stargazerでの記載方法"><span class="header-section-number">1.4.1</span> stargazerでの記載方法</h4>
+<p>先述のように<code>stargazer()</code>では<code>"text", "latex", "html"</code>で出力設定を指定可能であり<code>type =</code>の欄に上記のどれかを記入する。</p>
+<p><strong>Wordでレポートを書く</strong>場合、<code>type = "text"</code>でR Studio上に分析結果を表示し、それをコピー＆ペーストするのが良いだろう。結果として以下の画像のようになり、pdf化すれば何も問題はない。<a href="#fn5" class="footnote-ref" id="fnref5" role="doc-noteref"><sup>5</sup></a></p>
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="mincer_result_word.png" class="img-fluid quarto-figure quarto-figure-center figure-img" style="width:70.0%"></p>
+</figure>
+</div>
+<p><strong>LaTeXでレポートを書く</strong>場合も同様で、<code>type = "latex"</code>と記入し、出力される文字コードをLaTeXにコピー＆ペーストすれば上記の画像と同様の表が得られる。</p>
+<p>最後に<code>stargazer()</code>について述べるべきこととして、<code>stargazer()</code>は<strong>LaTeXを用いない人には使い勝手がそこまで良くない</strong>と言う点は重要だ。可能な出力形式が限定的で、csvやpngなどで結果を返してくれない点は気になる。</p>
+</section>
+<section id="modelsummaryでの記載方法" class="level4" data-number="1.4.2">
+<h4 data-number="1.4.2" class="anchored" data-anchor-id="modelsummaryでの記載方法"><span class="header-section-number">1.4.2</span> modelsummaryでの記載方法</h4>
+<p><code>stargazer()</code>とは異なり、<code>modelsummary()</code>は極めて多くの出力形式に対応している。<code>?modelsummary</code>と打った際に出てくるhelpにおいて、この関数が対応している拡張子は.docx, .html, .tex, .md, .txt, .csv, .xlsx, .png, .jpg とされている。</p>
+</section>
+</section>
+</section>
+
+
+<div id="quarto-appendix" class="default"><section id="footnotes" class="footnotes footnotes-end-of-document" role="doc-endnotes"><h2 class="anchored quarto-appendix-heading">Footnotes</h2>
+
+<ol>
+<li id="fn1"><p>切片の推定値<span class="math inline">\(\beta_{0}\)</span>は一般的に<code>Intercept</code>や<code>Constant</code>の行に示されている。<a href="#fnref1" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
+<li id="fn2"><p>こっちの方が一般的<a href="#fnref2" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
+<li id="fn3"><p>デフォルトは<code>type = "latex"</code><a href="#fnref3" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
+<li id="fn4"><p><code>?modelsummary</code>のように、確認したい関数の前に<code>?</code>を付けることで、R Studioの右下に存在するhelpが詳細を教えてくれる。<a href="#fnref4" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
+<li id="fn5"><p>当然だがWord上で分析結果の値を作為的に変えることは絶対にしてはならない。<a href="#fnref5" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
+</ol>
+</section></div></main>
+<!-- /main column -->
+<script id="quarto-html-after-body" type="application/javascript">
+  window.document.addEventListener("DOMContentLoaded", function (event) {
+    const icon = "";
+    const anchorJS = new window.AnchorJS();
+    anchorJS.options = {
+      placement: 'right',
+      icon: icon
+    };
+    anchorJS.add('.anchored');
+    const isCodeAnnotation = (el) => {
+      for (const clz of el.classList) {
+        if (clz.startsWith('code-annotation-')) {                     
+          return true;
+        }
+      }
+      return false;
+    }
+    const onCopySuccess = function(e) {
+      // button target
+      const button = e.trigger;
+      // don't keep focus
+      button.blur();
+      // flash "checked"
+      button.classList.add('code-copy-button-checked');
+      var currentTitle = button.getAttribute("title");
+      button.setAttribute("title", "Copied!");
+      let tooltip;
+      if (window.bootstrap) {
+        button.setAttribute("data-bs-toggle", "tooltip");
+        button.setAttribute("data-bs-placement", "left");
+        button.setAttribute("data-bs-title", "Copied!");
+        tooltip = new bootstrap.Tooltip(button, 
+          { trigger: "manual", 
+            customClass: "code-copy-button-tooltip",
+            offset: [0, -8]});
+        tooltip.show();    
+      }
+      setTimeout(function() {
+        if (tooltip) {
+          tooltip.hide();
+          button.removeAttribute("data-bs-title");
+          button.removeAttribute("data-bs-toggle");
+          button.removeAttribute("data-bs-placement");
+        }
+        button.setAttribute("title", currentTitle);
+        button.classList.remove('code-copy-button-checked');
+      }, 1000);
+      // clear code selection
+      e.clearSelection();
+    }
+    const getTextToCopy = function(trigger) {
+      const outerScaffold = trigger.parentElement.cloneNode(true);
+      const codeEl = outerScaffold.querySelector('code');
+      for (const childEl of codeEl.children) {
+        if (isCodeAnnotation(childEl)) {
+          childEl.remove();
+        }
+      }
+      return codeEl.innerText;
+    }
+    const clipboard = new window.ClipboardJS('.code-copy-button:not([data-in-quarto-modal])', {
+      text: getTextToCopy
+    });
+    clipboard.on('success', onCopySuccess);
+    if (window.document.getElementById('quarto-embedded-source-code-modal')) {
+      const clipboardModal = new window.ClipboardJS('.code-copy-button[data-in-quarto-modal]', {
+        text: getTextToCopy,
+        container: window.document.getElementById('quarto-embedded-source-code-modal')
+      });
+      clipboardModal.on('success', onCopySuccess);
+    }
+      var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
+      var mailtoRegex = new RegExp(/^mailto:/);
+        var filterRegex = new RegExp('/' + window.location.host + '/');
+      var isInternal = (href) => {
+          return filterRegex.test(href) || localhostRegex.test(href) || mailtoRegex.test(href);
+      }
+      // Inspect non-navigation links and adorn them if external
+     var links = window.document.querySelectorAll('a[href]:not(.nav-link):not(.navbar-brand):not(.toc-action):not(.sidebar-link):not(.sidebar-item-toggle):not(.pagination-link):not(.no-external):not([aria-hidden]):not(.dropdown-item):not(.quarto-navigation-tool):not(.about-link)');
+      for (var i=0; i<links.length; i++) {
+        const link = links[i];
+        if (!isInternal(link.href)) {
+          // undo the damage that might have been done by quarto-nav.js in the case of
+          // links that we want to consider external
+          if (link.dataset.originalHref !== undefined) {
+            link.href = link.dataset.originalHref;
+          }
+        }
+      }
+    function tippyHover(el, contentFn, onTriggerFn, onUntriggerFn) {
+      const config = {
+        allowHTML: true,
+        maxWidth: 500,
+        delay: 100,
+        arrow: false,
+        appendTo: function(el) {
+            return el.parentElement;
+        },
+        interactive: true,
+        interactiveBorder: 10,
+        theme: 'quarto',
+        placement: 'bottom-start',
+      };
+      if (contentFn) {
+        config.content = contentFn;
+      }
+      if (onTriggerFn) {
+        config.onTrigger = onTriggerFn;
+      }
+      if (onUntriggerFn) {
+        config.onUntrigger = onUntriggerFn;
+      }
+      window.tippy(el, config); 
+    }
+    const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+    for (var i=0; i<noterefs.length; i++) {
+      const ref = noterefs[i];
+      tippyHover(ref, function() {
+        // use id or data attribute instead here
+        let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+        try { href = new URL(href).hash; } catch {}
+        const id = href.replace(/^#\/?/, "");
+        const note = window.document.getElementById(id);
+        if (note) {
+          return note.innerHTML;
+        } else {
+          return "";
+        }
+      });
+    }
+    const xrefs = window.document.querySelectorAll('a.quarto-xref');
+    const processXRef = (id, note) => {
+      // Strip column container classes
+      const stripColumnClz = (el) => {
+        el.classList.remove("page-full", "page-columns");
+        if (el.children) {
+          for (const child of el.children) {
+            stripColumnClz(child);
+          }
+        }
+      }
+      stripColumnClz(note)
+      if (id === null || id.startsWith('sec-')) {
+        // Special case sections, only their first couple elements
+        const container = document.createElement("div");
+        if (note.children && note.children.length > 2) {
+          container.appendChild(note.children[0].cloneNode(true));
+          for (let i = 1; i < note.children.length; i++) {
+            const child = note.children[i];
+            if (child.tagName === "P" && child.innerText === "") {
+              continue;
+            } else {
+              container.appendChild(child.cloneNode(true));
+              break;
+            }
+          }
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(container);
+          }
+          return container.innerHTML
+        } else {
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(note);
+          }
+          return note.innerHTML;
+        }
+      } else {
+        // Remove any anchor links if they are present
+        const anchorLink = note.querySelector('a.anchorjs-link');
+        if (anchorLink) {
+          anchorLink.remove();
+        }
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(note);
+        }
+        if (note.classList.contains("callout")) {
+          return note.outerHTML;
+        } else {
+          return note.innerHTML;
+        }
+      }
+    }
+    for (var i=0; i<xrefs.length; i++) {
+      const xref = xrefs[i];
+      tippyHover(xref, undefined, function(instance) {
+        instance.disable();
+        let url = xref.getAttribute('href');
+        let hash = undefined; 
+        if (url.startsWith('#')) {
+          hash = url;
+        } else {
+          try { hash = new URL(url).hash; } catch {}
+        }
+        if (hash) {
+          const id = hash.replace(/^#\/?/, "");
+          const note = window.document.getElementById(id);
+          if (note !== null) {
+            try {
+              const html = processXRef(id, note.cloneNode(true));
+              instance.setContent(html);
+            } finally {
+              instance.enable();
+              instance.show();
+            }
+          } else {
+            // See if we can fetch this
+            fetch(url.split('#')[0])
+            .then(res => res.text())
+            .then(html => {
+              const parser = new DOMParser();
+              const htmlDoc = parser.parseFromString(html, "text/html");
+              const note = htmlDoc.getElementById(id);
+              if (note !== null) {
+                const html = processXRef(id, note);
+                instance.setContent(html);
+              } 
+            }).finally(() => {
+              instance.enable();
+              instance.show();
+            });
+          }
+        } else {
+          // See if we can fetch a full url (with no hash to target)
+          // This is a special case and we should probably do some content thinning / targeting
+          fetch(url)
+          .then(res => res.text())
+          .then(html => {
+            const parser = new DOMParser();
+            const htmlDoc = parser.parseFromString(html, "text/html");
+            const note = htmlDoc.querySelector('main.content');
+            if (note !== null) {
+              // This should only happen for chapter cross references
+              // (since there is no id in the URL)
+              // remove the first header
+              if (note.children.length > 0 && note.children[0].tagName === "HEADER") {
+                note.children[0].remove();
+              }
+              const html = processXRef(null, note);
+              instance.setContent(html);
+            } 
+          }).finally(() => {
+            instance.enable();
+            instance.show();
+          });
+        }
+      }, function(instance) {
+      });
+    }
+        let selectedAnnoteEl;
+        const selectorForAnnotation = ( cell, annotation) => {
+          let cellAttr = 'data-code-cell="' + cell + '"';
+          let lineAttr = 'data-code-annotation="' +  annotation + '"';
+          const selector = 'span[' + cellAttr + '][' + lineAttr + ']';
+          return selector;
+        }
+        const selectCodeLines = (annoteEl) => {
+          const doc = window.document;
+          const targetCell = annoteEl.getAttribute("data-target-cell");
+          const targetAnnotation = annoteEl.getAttribute("data-target-annotation");
+          const annoteSpan = window.document.querySelector(selectorForAnnotation(targetCell, targetAnnotation));
+          const lines = annoteSpan.getAttribute("data-code-lines").split(",");
+          const lineIds = lines.map((line) => {
+            return targetCell + "-" + line;
+          })
+          let top = null;
+          let height = null;
+          let parent = null;
+          if (lineIds.length > 0) {
+              //compute the position of the single el (top and bottom and make a div)
+              const el = window.document.getElementById(lineIds[0]);
+              top = el.offsetTop;
+              height = el.offsetHeight;
+              parent = el.parentElement.parentElement;
+            if (lineIds.length > 1) {
+              const lastEl = window.document.getElementById(lineIds[lineIds.length - 1]);
+              const bottom = lastEl.offsetTop + lastEl.offsetHeight;
+              height = bottom - top;
+            }
+            if (top !== null && height !== null && parent !== null) {
+              // cook up a div (if necessary) and position it 
+              let div = window.document.getElementById("code-annotation-line-highlight");
+              if (div === null) {
+                div = window.document.createElement("div");
+                div.setAttribute("id", "code-annotation-line-highlight");
+                div.style.position = 'absolute';
+                parent.appendChild(div);
+              }
+              div.style.top = top - 2 + "px";
+              div.style.height = height + 4 + "px";
+              div.style.left = 0;
+              let gutterDiv = window.document.getElementById("code-annotation-line-highlight-gutter");
+              if (gutterDiv === null) {
+                gutterDiv = window.document.createElement("div");
+                gutterDiv.setAttribute("id", "code-annotation-line-highlight-gutter");
+                gutterDiv.style.position = 'absolute';
+                const codeCell = window.document.getElementById(targetCell);
+                const gutter = codeCell.querySelector('.code-annotation-gutter');
+                gutter.appendChild(gutterDiv);
+              }
+              gutterDiv.style.top = top - 2 + "px";
+              gutterDiv.style.height = height + 4 + "px";
+            }
+            selectedAnnoteEl = annoteEl;
+          }
+        };
+        const unselectCodeLines = () => {
+          const elementsIds = ["code-annotation-line-highlight", "code-annotation-line-highlight-gutter"];
+          elementsIds.forEach((elId) => {
+            const div = window.document.getElementById(elId);
+            if (div) {
+              div.remove();
+            }
+          });
+          selectedAnnoteEl = undefined;
+        };
+          // Handle positioning of the toggle
+      window.addEventListener(
+        "resize",
+        throttle(() => {
+          elRect = undefined;
+          if (selectedAnnoteEl) {
+            selectCodeLines(selectedAnnoteEl);
+          }
+        }, 10)
+      );
+      function throttle(fn, ms) {
+      let throttle = false;
+      let timer;
+        return (...args) => {
+          if(!throttle) { // first call gets through
+              fn.apply(this, args);
+              throttle = true;
+          } else { // all the others get throttled
+              if(timer) clearTimeout(timer); // cancel #2
+              timer = setTimeout(() => {
+                fn.apply(this, args);
+                timer = throttle = false;
+              }, ms);
+          }
+        };
+      }
+        // Attach click handler to the DT
+        const annoteDls = window.document.querySelectorAll('dt[data-target-cell]');
+        for (const annoteDlNode of annoteDls) {
+          annoteDlNode.addEventListener('click', (event) => {
+            const clickedEl = event.target;
+            if (clickedEl !== selectedAnnoteEl) {
+              unselectCodeLines();
+              const activeEl = window.document.querySelector('dt[data-target-cell].code-annotation-active');
+              if (activeEl) {
+                activeEl.classList.remove('code-annotation-active');
+              }
+              selectCodeLines(clickedEl);
+              clickedEl.classList.add('code-annotation-active');
+            } else {
+              // Unselect the line
+              unselectCodeLines();
+              clickedEl.classList.remove('code-annotation-active');
+            }
+          });
+        }
+    const findCites = (el) => {
+      const parentEl = el.parentElement;
+      if (parentEl) {
+        const cites = parentEl.dataset.cites;
+        if (cites) {
+          return {
+            el,
+            cites: cites.split(' ')
+          };
+        } else {
+          return findCites(el.parentElement)
+        }
+      } else {
+        return undefined;
+      }
+    };
+    var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+    for (var i=0; i<bibliorefs.length; i++) {
+      const ref = bibliorefs[i];
+      const citeInfo = findCites(ref);
+      if (citeInfo) {
+        tippyHover(citeInfo.el, function() {
+          var popup = window.document.createElement('div');
+          citeInfo.cites.forEach(function(cite) {
+            var citeDiv = window.document.createElement('div');
+            citeDiv.classList.add('hanging-indent');
+            citeDiv.classList.add('csl-entry');
+            var biblioDiv = window.document.getElementById('ref-' + cite);
+            if (biblioDiv) {
+              citeDiv.innerHTML = biblioDiv.innerHTML;
+            }
+            popup.appendChild(citeDiv);
+          });
+          return popup.innerHTML;
+        });
+      }
+    }
+  });
+  </script>
+</div> <!-- /content -->
+
+
+
+
+</body></html>
