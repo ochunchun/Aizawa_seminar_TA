@@ -1,8 +1,21 @@
 ---
 title: "R Studioで計量経済分析(1)"
-author: "成田 慶之"
-date: today
-format: html
+author: 成田慶之
+date-modified: today
+format:
+  html: 
+    grid: 
+      body-width: 1024px
+    toc: true
+    toc-depth: 3
+    number-sections: true
+execute: # Quarto全体・全言語に適応されるチャンクオプション
+  warning: false
+  cache: true
+knitr:   # Rチャンクのみに適応されるオプション
+  opts_chunk: 
+    dev: ragg_png
+lang: ja
 ---
 
 ## はじめに
