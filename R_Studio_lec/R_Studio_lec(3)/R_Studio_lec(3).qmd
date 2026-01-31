@@ -1,14 +1,21 @@
 ---
 title: "R Studioで計量経済分析(3)"
-author: "成田 慶之"
-date: today
-format: html
-toc: true
-toc-depth: 3
-number-sections: true
-execute: 
+author: 成田慶之
+date-modified: today
+format:
+  html: 
+    grid: 
+      body-width: 1024px
+    toc: true
+    toc-depth: 3
+    number-sections: true
+execute: # Quarto全体・全言語に適応されるチャンクオプション
   warning: false
   cache: true
+knitr:   # Rチャンクのみに適応されるオプション
+  opts_chunk: 
+    dev: ragg_png
+lang: ja
 ---
 
 本章では、[R Studioで計量経済分析(1)](https://ochunchun.github.io/Aizawa_seminar_TA/R_Studio_lec/R_Studio_lec(1)/R_Studio_lec(1).html)で紹介した、OLS回帰分析について、見やすい結果の出力・追加の分析方法をより詳細に説明する。
