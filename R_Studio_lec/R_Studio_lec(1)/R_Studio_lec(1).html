@@ -112,7 +112,11 @@ window.Quarto = {
     <h2 id="toc-title">目次</h2>
    
   <ul>
-  <li><a href="#はじめに" id="toc-はじめに" class="nav-link active" data-scroll-target="#はじめに"><span class="header-section-number">1</span> はじめに</a></li>
+  <li><a href="#はじめに" id="toc-はじめに" class="nav-link active" data-scroll-target="#はじめに"><span class="header-section-number">1</span> はじめに</a>
+  <ul class="collapse">
+  <li><a href="#準備-コードはどこに書くのか" id="toc-準備-コードはどこに書くのか" class="nav-link" data-scroll-target="#準備-コードはどこに書くのか"><span class="header-section-number">1.1</span> 準備 (コードはどこに書くのか？)</a></li>
+  <li><a href="#基本的に用いる表現数式" id="toc-基本的に用いる表現数式" class="nav-link" data-scroll-target="#基本的に用いる表現数式"><span class="header-section-number">1.2</span> 基本的に用いる表現・数式</a></li>
+  </ul></li>
   <li><a href="#パッケージのインストールと読み込み" id="toc-パッケージのインストールと読み込み" class="nav-link" data-scroll-target="#パッケージのインストールと読み込み"><span class="header-section-number">2</span> パッケージのインストールと読み込み</a>
   <ul class="collapse">
   <li><a href="#パッケージのインストール" id="toc-パッケージのインストール" class="nav-link" data-scroll-target="#パッケージのインストール"><span class="header-section-number">2.1</span> パッケージのインストール</a></li>
@@ -147,7 +151,7 @@ window.Quarto = {
     <div>
     <div class="quarto-title-meta-heading">更新日</div>
     <div class="quarto-title-meta-contents">
-      <p class="date-modified">2026年1月31日</p>
+      <p class="date-modified">2026年2月15日</p>
     </div>
   </div>
     
@@ -160,52 +164,84 @@ window.Quarto = {
 
 <section id="はじめに" class="level2" data-number="1">
 <h2 data-number="1" class="anchored" data-anchor-id="はじめに"><span class="header-section-number">1</span> はじめに</h2>
-<p>本資料は統計ソフト<strong>R</strong>を用いて回帰分析を行なう際のコードの書き方を教えるものである。この資料は<strong>R</strong>およびそのIDE(統合開発環境)である<strong>R Studio</strong>をダウンロードした前提で進める。</p>
-<p>今からダウンロードする場合、以下のサイトの「2 Rのインストール」「3 IDEの導入」を参照すると良い。</p>
-<p><a href="https://www.jaysong.net/RBook/" class="external">私たちのR</a></p>
-<p>本題に入る前に、超超超基本的なRの操作について説明しておく。</p>
-<section id="コードはどこに書くのか" class="level4" data-number="1.0.1">
-<h4 data-number="1.0.1" class="anchored" data-anchor-id="コードはどこに書くのか"><span class="header-section-number">1.0.1</span> コードはどこに書くのか?</h4>
-<video controls="" width="800">
-  <source src="R_Studio_lec(1).mp4" type="video/mp4">
-</video>
+<p>本資料は統計ソフト<strong>R</strong>を用いて計量経済分析を行なう際のコードの書き方を教えるものである。本資料の目標として、相澤ゼミに所属するゼミ生が、計量経済学の方法論 (OLS回帰分析や固定効果モデル等) を用いてレポート・卒業論文を書く際に、一通りの作業を滞りなく実行出来るようになることを目指す。</p>
+<p>＊本資料はRおよびそのIDE (統合開発環境) である<strong>R Studio</strong>をダウンロードした前提で進める。 今からダウンロードする場合、ネット上にダウンロード方法が説明されたWebサイトが多数存在するため、まずはそちらを参照されたい。</p>
+<p>ここでは、実際に分析を行なう前の基本的な操作方法について説明する。</p>
+<section id="準備-コードはどこに書くのか" class="level3" data-number="1.1">
+<h3 data-number="1.1" class="anchored" data-anchor-id="準備-コードはどこに書くのか"><span class="header-section-number">1.1</span> 準備 (コードはどこに書くのか？)</h3>
+<p>まず第1に、私たちは<u>R Studioを用いて分析を行なう</u> (Rは操作を行なうための言語)。</p>
+<p>R Studioを開くと、以下の様な画面が表示されるはずだ。</p>
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="R_Studio_画面(1).jpg" class="img-fluid figure-img"></p>
+<figcaption>R Studio起動時の画面とR Scriptの作成</figcaption>
+</figure>
+</div>
+<p>そうしたらまずは上の画像にもあるように、<span style="color:red;">○</span>にある New File ボタンをクリックして<strong>R Script</strong>を作成する。基本的に分析の際は、R Scriptにコードを書いていくことになる。</p>
+<p>R Scriptを開くと下の画像のような状態となり、それぞれの部分がそれぞれの役割を有している。</p>
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="R_Studio_画面(2).jpg" class="img-fluid figure-img"></p>
+<figcaption>R Studioでの基本的な配置画面と各部分の機能</figcaption>
+</figure>
+</div>
+<p>基本的な流れとしては</p>
+<ol type="1">
+<li>R Scriptを作成し、画面左上の<span style="color:red;">□</span>部分でコードを打ち込んで実行する (実行は<span style="color:red;">□</span>の右上にある<em>Run</em>や<em>Source</em>のボタン)<a href="#fn1" class="footnote-ref" id="fnref1" role="doc-noteref"><sup>1</sup></a></li>
+</ol>
+<ol start="2" type="1">
+<li><p>実行された結果は画面左下の□部分(Console)、図表などは画面右の<span style="color:blue;">□</span>下側(Plots, Viewer 等)に表示される</p></li>
+<li><p>適宜R Scriptを<span style="color:green;">○</span>内の保存ボタンで保存する</p></li>
+<li><p>1度閉じたR Scriptは<span style="color:purple;">○</span>の開くボタンで呼び出す</p></li>
+</ol>
 </section>
-<section id="代入何らかの変数に値を代入する" class="level4" data-number="1.0.2">
-<h4 data-number="1.0.2" class="anchored" data-anchor-id="代入何らかの変数に値を代入する"><span class="header-section-number">1.0.2</span> 代入：何らかの変数に値を代入する</h4>
+<section id="基本的に用いる表現数式" class="level3" data-number="1.2">
+<h3 data-number="1.2" class="anchored" data-anchor-id="基本的に用いる表現数式"><span class="header-section-number">1.2</span> 基本的に用いる表現・数式</h3>
+<p>以下からは、実際にR Script内にコードを書いて実行していく。<span style="color:grey; background-color:#EEEEEE;">薄い灰色で覆われている部分</span>がRコードであり、そのすぐ下側の部分はコードが実行されて返された結果である。</p>
+<section id="コメント" class="level4" data-number="1.2.1">
+<h4 data-number="1.2.1" class="anchored" data-anchor-id="コメント"><span class="header-section-number">1.2.1</span> コメント</h4>
 <div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a>x <span class="ot">&lt;-</span> <span class="dv">5</span> <span class="co"># xに5を代入した</span></span>
-<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a>x      <span class="co"># 5が出力される</span></span></code></pre></div><button title="コピー" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="co"># #マークの後に記入される内容は、コードに一切影響を与えない</span></span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="co"># 他者が見ても理解できるように、#でコードの説明・何をしているのかを適宜残しておくと良い</span></span></code></pre></div><button title="コピー" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+</section>
+<section id="四則演算" class="level4" data-number="1.2.2">
+<h4 data-number="1.2.2" class="anchored" data-anchor-id="四則演算"><span class="header-section-number">1.2.2</span> 四則演算</h4>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb2"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="dv">5</span> <span class="sc">+</span> <span class="dv">3</span>    <span class="co"># 足し算</span></span></code></pre></div><button title="コピー" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] 8</code></pre>
+</div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb4"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="dv">100</span> <span class="sc">-</span> <span class="dv">33</span> <span class="co"># 引き算</span></span></code></pre></div><button title="コピー" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] 67</code></pre>
+</div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb6"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="dv">33</span> <span class="sc">*</span> <span class="dv">9</span>   <span class="co"># かけ算</span></span></code></pre></div><button title="コピー" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] 297</code></pre>
+</div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb8"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="dv">22</span> <span class="sc">/</span> <span class="dv">11</span>  <span class="co"># 割り算</span></span></code></pre></div><button title="コピー" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] 2</code></pre>
+</div>
+</div>
+</section>
+<section id="代入何らかの変数に値を代入する" class="level4" data-number="1.2.3">
+<h4 data-number="1.2.3" class="anchored" data-anchor-id="代入何らかの変数に値を代入する"><span class="header-section-number">1.2.3</span> 代入：何らかの変数に値を代入する</h4>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb10"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a>x <span class="ot">&lt;-</span> <span class="dv">5</span> <span class="co"># xに5を代入した</span></span>
+<span id="cb10-2"><a href="#cb10-2" aria-hidden="true" tabindex="-1"></a>x      <span class="co"># 5が出力される</span></span></code></pre></div><button title="コピー" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>[1] 5</code></pre>
 </div>
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb3"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="co"># 色々なものを代入できる</span></span>
-<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a>Narita <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="st">"Aomori"</span>)</span>
-<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a>Narita</span></code></pre></div><button title="コピー" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb12"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a><span class="co"># 色々なものを代入できる</span></span>
+<span id="cb12-2"><a href="#cb12-2" aria-hidden="true" tabindex="-1"></a>Narita <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="st">"Aomori"</span>)</span>
+<span id="cb12-3"><a href="#cb12-3" aria-hidden="true" tabindex="-1"></a>Narita</span></code></pre></div><button title="コピー" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>[1] "Aomori"</code></pre>
 </div>
 </div>
 </section>
-<section id="四則演算" class="level4" data-number="1.0.3">
-<h4 data-number="1.0.3" class="anchored" data-anchor-id="四則演算"><span class="header-section-number">1.0.3</span> 四則演算</h4>
-<div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb5"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="dv">5</span> <span class="sc">+</span> <span class="dv">3</span>    <span class="co"># 足し算</span></span></code></pre></div><button title="コピー" class="code-copy-button"><i class="bi"></i></button></div>
-<div class="cell-output cell-output-stdout">
-<pre><code>[1] 8</code></pre>
-</div>
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb7"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="dv">100</span> <span class="sc">-</span> <span class="dv">33</span> <span class="co"># 引き算</span></span></code></pre></div><button title="コピー" class="code-copy-button"><i class="bi"></i></button></div>
-<div class="cell-output cell-output-stdout">
-<pre><code>[1] 67</code></pre>
-</div>
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb9"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a><span class="dv">33</span> <span class="sc">*</span> <span class="dv">9</span>   <span class="co"># かけ算</span></span></code></pre></div><button title="コピー" class="code-copy-button"><i class="bi"></i></button></div>
-<div class="cell-output cell-output-stdout">
-<pre><code>[1] 297</code></pre>
-</div>
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb11"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a><span class="dv">22</span> <span class="sc">/</span> <span class="dv">11</span>  <span class="co"># 割り算</span></span></code></pre></div><button title="コピー" class="code-copy-button"><i class="bi"></i></button></div>
-<div class="cell-output cell-output-stdout">
-<pre><code>[1] 2</code></pre>
-</div>
-</div>
 </section>
 </section>
 <section id="パッケージのインストールと読み込み" class="level2" data-number="2">
@@ -217,9 +253,9 @@ window.Quarto = {
 <h3 data-number="2.1" class="anchored" data-anchor-id="パッケージのインストール"><span class="header-section-number">2.1</span> パッケージのインストール</h3>
 <p>パッケージのインストールは、いわばお店でそれらのセットを<strong>購入</strong>することを意味する。 試しに{tidyverse}という名前のパッケージをインストールする。 <code>install.packages("パッケージ名")</code>という関数を使う(この関数自体は初めからRに内蔵されている)</p>
 <div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb13"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a><span class="fu">install.packages</span>(<span class="st">"tidyverse"</span>)</span></code></pre></div><button title="コピー" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb14"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a><span class="fu">install.packages</span>(<span class="st">"tidyverse"</span>)</span></code></pre></div><button title="コピー" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
-<p>一度インストールしたパッケージは、PCのファイル内に保存されるため、次回起動時にインストールする必要はない<a href="#fn1" class="footnote-ref" id="fnref1" role="doc-noteref"><sup>1</sup></a>。</p>
+<p>一度インストールしたパッケージは、PCのファイル内に保存されるため、次回起動時にインストールする必要はない。<a href="#fn2" class="footnote-ref" id="fnref2" role="doc-noteref"><sup>2</sup></a></p>
 </section>
 <section id="パッケージの読み込み" class="level3" data-number="2.2">
 <h3 data-number="2.2" class="anchored" data-anchor-id="パッケージの読み込み"><span class="header-section-number">2.2</span> パッケージの読み込み</h3>
@@ -227,9 +263,9 @@ window.Quarto = {
 <p>あなたは調理器具セット・具材セットを購入(インストール)したが、調理器具は棚へ、具材は冷蔵庫にしまうはずだ。そして、いざ調理(分析)に用いる際にそこから<strong>取り出し</strong>て使用しなければならない。パッケージの読み込みは、この<strong>取り出し</strong>に相当する。</p>
 <p>先ほどの{tidyvese}というパッケージを今度は読み込んでみる。使う関数は<code>library(パッケージ名)</code>または<code>require(パッケージ名)</code>。</p>
 <div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb14"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(tidyverse)</span></code></pre></div><button title="コピー" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb15"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(tidyverse)</span></code></pre></div><button title="コピー" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
-<p>何やら大量に<strong>Warning</strong>の文字が出力されているが無視してOK。 RにおいてWarningが表示されたとき、コード自体は正しく実行されており、一応の懸念点をRのソフトが教えてくれているだけである<a href="#fn2" class="footnote-ref" id="fnref2" role="doc-noteref"><sup>2</sup></a>。</p>
+<p>何やら大量に<strong>Warning</strong>の文字が出力されているが無視してOK。 RにおいてWarningが表示されたとき、コード自体は正しく実行されており、一応の懸念点をRのソフトが教えてくれているだけである<a href="#fn3" class="footnote-ref" id="fnref3" role="doc-noteref"><sup>3</sup></a>。</p>
 <p>ただし<strong>Error</strong>が表示された場合、コードが正しく実行されていないため、何らかの修正が必要である。</p>
 <p>一度読み込んだパッケージはRのソフトが終了すると、自動的に棚or冷蔵庫に戻ってしまう。そのため、分析者はRを起動するたびに<code>library()</code>,<code>require()</code>でパッケージを呼び出さなければならない。</p>
 </section>
@@ -244,10 +280,10 @@ window.Quarto = {
 <section id="wooldridgeのインストールと読み込み" class="level4" data-number="3.1.1">
 <h4 data-number="3.1.1" class="anchored" data-anchor-id="wooldridgeのインストールと読み込み"><span class="header-section-number">3.1.1</span> {wooldridge}のインストールと読み込み</h4>
 <div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb15"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a><span class="fu">install.packages</span>(<span class="st">"wooldridge"</span>)</span></code></pre></div><button title="コピー" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb16"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb16-1"><a href="#cb16-1" aria-hidden="true" tabindex="-1"></a><span class="fu">install.packages</span>(<span class="st">"wooldridge"</span>)</span></code></pre></div><button title="コピー" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
 <div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb16"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb16-1"><a href="#cb16-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(wooldridge)</span></code></pre></div><button title="コピー" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb17"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb17-1"><a href="#cb17-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(wooldridge)</span></code></pre></div><button title="コピー" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
 </section>
 <section id="crime4のデータでols回帰分析を行なう" class="level4" data-number="3.1.2">
@@ -256,8 +292,8 @@ window.Quarto = {
 <p><span class="math inline">\(crmrte_{it} = \beta_{0} + \beta_{1}taxpc_{it} + \beta_{2}polpc_{it} + u_{it}\)</span></p>
 <p>i,tはt年のi地域を示しており、<span class="math inline">\(u\)</span>は誤差項を表している。また、各変数は<span class="math inline">\(crmrte\)</span> (1人当たり犯罪数), <span class="math inline">\(taxpc\)</span> (1人当たり税収入), <span class="math inline">\(polpc\)</span> (1人当たり警察官数)である。</p>
 <div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb17"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb17-1"><a href="#cb17-1" aria-hidden="true" tabindex="-1"></a><span class="co"># 上記の式を基にlm()関数を実行する</span></span>
-<span id="cb17-2"><a href="#cb17-2" aria-hidden="true" tabindex="-1"></a><span class="fu">lm</span>(crmrte <span class="sc">~</span> taxpc <span class="sc">+</span> polpc, <span class="at">data =</span> crime4)</span></code></pre></div><button title="コピー" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb18"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb18-1"><a href="#cb18-1" aria-hidden="true" tabindex="-1"></a><span class="co"># 上記の式を基にlm()関数を実行する</span></span>
+<span id="cb18-2"><a href="#cb18-2" aria-hidden="true" tabindex="-1"></a><span class="fu">lm</span>(crmrte <span class="sc">~</span> taxpc <span class="sc">+</span> polpc, <span class="at">data =</span> crime4)</span></code></pre></div><button title="コピー" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>
 Call:
@@ -276,11 +312,11 @@ Coefficients:
 <p>統計分析において<strong>推定された値が統計的に有意かどうか</strong>が極めて重要である。 上記の出力結果では統計的な優位性に関して何も教えてくれない…</p>
 <p>そこで、以下のように出力の仕方を変えることで、統計的な優位性も一目で分かる出力結果表を得ることが出来る。</p>
 <div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb19"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb19-1"><a href="#cb19-1" aria-hidden="true" tabindex="-1"></a><span class="co"># lm()の分析結果を何らかの変数に代入する</span></span>
-<span id="cb19-2"><a href="#cb19-2" aria-hidden="true" tabindex="-1"></a>result <span class="ot">&lt;-</span> <span class="fu">lm</span>(crmrte <span class="sc">~</span> taxpc <span class="sc">+</span> polpc, <span class="at">data =</span> crime4)</span>
-<span id="cb19-3"><a href="#cb19-3" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb19-4"><a href="#cb19-4" aria-hidden="true" tabindex="-1"></a><span class="co"># summary()と言う関数の括弧内に上記の変数(result)を代入する</span></span>
-<span id="cb19-5"><a href="#cb19-5" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(result)</span></code></pre></div><button title="コピー" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb20"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb20-1"><a href="#cb20-1" aria-hidden="true" tabindex="-1"></a><span class="co"># lm()の分析結果を何らかの変数に代入する</span></span>
+<span id="cb20-2"><a href="#cb20-2" aria-hidden="true" tabindex="-1"></a>result <span class="ot">&lt;-</span> <span class="fu">lm</span>(crmrte <span class="sc">~</span> taxpc <span class="sc">+</span> polpc, <span class="at">data =</span> crime4)</span>
+<span id="cb20-3"><a href="#cb20-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb20-4"><a href="#cb20-4" aria-hidden="true" tabindex="-1"></a><span class="co"># summary()と言う関数の括弧内に上記の変数(result)を代入する</span></span>
+<span id="cb20-5"><a href="#cb20-5" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(result)</span></code></pre></div><button title="コピー" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>
 Call:
@@ -305,7 +341,7 @@ F-statistic: 26.92 on 2 and 627 DF,  p-value: 6.096e-12</code></pre>
 </div>
 <hr>
 <p>今度は色々と出力されて煩わしく感じるが、Coefficients:と書かれた下側の表がメインの推定結果を示している。</p>
-<p>Estimateの行を見ると、先ほど<code>lm()</code>で出力した係数値を四捨五入した値と、同じ値が出ていることが分かる<a href="#fn3" class="footnote-ref" id="fnref3" role="doc-noteref"><sup>3</sup></a>。</p>
+<p>Estimateの行を見ると、先ほど<code>lm()</code>で出力した係数値を四捨五入した値と、同じ値が出ていることが分かる<a href="#fn4" class="footnote-ref" id="fnref4" role="doc-noteref"><sup>4</sup></a>。</p>
 <p>では統計的な優位性について確認しよう。同じ表のPr(&gt;|t|)の行を確認しよう。この行は、各係数の推定値に関する<strong>p値</strong>を示している。p値の詳細な説明は割愛するが、一般的にこの値が0.05を下回っていれば「統計的に有意である」と考えられている。</p>
 <p>確認してみると、一番p値が大きい<span class="math inline">\(polpc\)</span>において<span class="math inline">\(3.12e-05 = 0.0000312\)</span>であるため、全ての推定結果が「統計的に有意である」と言える。</p>
 <p>ただ、そんな計算せずともPr(&gt;|t|)の右側にある＊マークを見れば統計的な優位性が一目で分かる。Signif. codes: という行に＊の詳細が書かれており、＊＊＊で0.1%、＊＊で1%、＊で5%水準で統計的に有意であることを示している。</p>
@@ -317,9 +353,10 @@ F-statistic: 26.92 on 2 and 627 DF,  p-value: 6.096e-12</code></pre>
 <div id="quarto-appendix" class="default"><section id="footnotes" class="footnotes footnotes-end-of-document" role="doc-endnotes"><h2 class="anchored quarto-appendix-heading">脚注</h2>
 
 <ol>
-<li id="fn1"><p>パッケージは度々新しい機能が追加されたりするため、その時は再度<code>install.packages()</code>を行なってアップデートする。<a href="#fnref1" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
-<li id="fn2"><p>別の関数を使用する際に出力されるWarningは少し気にしとくと良い。<a href="#fnref2" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
-<li id="fn3"><p>1.934e-02は<span class="math inline">\(1.934 \times 10^{-2} = 0.01934\)</span>を示す。<a href="#fnref3" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
+<li id="fn1"><p><em>Run</em>はスクリプト内で指定した部分を実行し、<em>Source</em>はスクリプト内の全てのコードを実行する。また、<em>Run</em>はキーボードの Ctrl + Enter でも可能。<a href="#fnref1" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
+<li id="fn2"><p>パッケージは度々新しい機能が追加されたりするため、その時は再度<code>install.packages()</code>を行なってアップデートする。<a href="#fnref2" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
+<li id="fn3"><p>別の関数を使用する際に出力されるWarningは少し気にしとくと良い。<a href="#fnref3" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
+<li id="fn4"><p>1.934e-02は<span class="math inline">\(1.934 \times 10^{-2} = 0.01934\)</span>を示す。<a href="#fnref4" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
 </ol>
 </section></div></main>
 <!-- /main column -->
