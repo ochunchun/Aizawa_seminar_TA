@@ -8,7 +8,7 @@
 
 <meta name="author" content="成田慶之">
 
-<title>(1) R Studioの超基本操作＆パッケージの扱い</title>
+<title>(1) Rの基本操作①：超基本操作・パッケージ</title>
 <style>
 code{white-space: pre-wrap;}
 span.smallcaps{font-variant: small-caps;}
@@ -86,15 +86,16 @@ body { line-height: 1.6; }
     <h2 id="toc-title">目次</h2>
    
   <ul>
-  <li><a href="#はじめに" id="toc-はじめに" class="nav-link active" data-scroll-target="#はじめに"><span class="header-section-number">1</span> はじめに</a>
+  <li><a href="#はじめに" id="toc-はじめに" class="nav-link active" data-scroll-target="#はじめに"><span class="header-section-number">1</span> はじめに</a></li>
+  <li><a href="#rの超基本操作" id="toc-rの超基本操作" class="nav-link" data-scroll-target="#rの超基本操作"><span class="header-section-number">2</span> Rの超基本操作</a>
   <ul class="collapse">
-  <li><a href="#準備コードはどこに書くのか" id="toc-準備コードはどこに書くのか" class="nav-link" data-scroll-target="#準備コードはどこに書くのか"><span class="header-section-number">1.1</span> 準備（コードはどこに書くのか？）</a></li>
-  <li><a href="#基本的に用いる表現数式" id="toc-基本的に用いる表現数式" class="nav-link" data-scroll-target="#基本的に用いる表現数式"><span class="header-section-number">1.2</span> 基本的に用いる表現・数式</a></li>
+  <li><a href="#準備コードはどこに書くのか" id="toc-準備コードはどこに書くのか" class="nav-link" data-scroll-target="#準備コードはどこに書くのか"><span class="header-section-number">2.1</span> 準備（コードはどこに書くのか？）</a></li>
+  <li><a href="#基本的に用いる表現数式" id="toc-基本的に用いる表現数式" class="nav-link" data-scroll-target="#基本的に用いる表現数式"><span class="header-section-number">2.2</span> 基本的に用いる表現・数式</a></li>
   </ul></li>
-  <li><a href="#sec-package" id="toc-sec-package" class="nav-link" data-scroll-target="#sec-package"><span class="header-section-number">2</span> パッケージのインストールと読み込み</a>
+  <li><a href="#sec-package" id="toc-sec-package" class="nav-link" data-scroll-target="#sec-package"><span class="header-section-number">3</span> パッケージ</a>
   <ul class="collapse">
-  <li><a href="#パッケージのインストール" id="toc-パッケージのインストール" class="nav-link" data-scroll-target="#パッケージのインストール"><span class="header-section-number">2.1</span> パッケージのインストール</a></li>
-  <li><a href="#パッケージの読み込み" id="toc-パッケージの読み込み" class="nav-link" data-scroll-target="#パッケージの読み込み"><span class="header-section-number">2.2</span> パッケージの読み込み</a></li>
+  <li><a href="#パッケージのインストール" id="toc-パッケージのインストール" class="nav-link" data-scroll-target="#パッケージのインストール"><span class="header-section-number">3.1</span> パッケージのインストール</a></li>
+  <li><a href="#パッケージの読み込み" id="toc-パッケージの読み込み" class="nav-link" data-scroll-target="#パッケージの読み込み"><span class="header-section-number">3.2</span> パッケージの読み込み</a></li>
   </ul></li>
   </ul>
 </nav>
@@ -103,7 +104,7 @@ body { line-height: 1.6; }
 
 <header id="title-block-header" class="quarto-title-block default">
 <div class="quarto-title">
-<h1 class="title">(1) R Studioの超基本操作＆パッケージの扱い</h1>
+<h1 class="title">(1) Rの基本操作①：超基本操作・パッケージ</h1>
 </div>
 
 
@@ -121,7 +122,7 @@ body { line-height: 1.6; }
     <div>
     <div class="quarto-title-meta-heading">更新日</div>
     <div class="quarto-title-meta-contents">
-      <p class="date-modified">2026年2月15日</p>
+      <p class="date-modified">2026年2月19日</p>
     </div>
   </div>
     
@@ -136,14 +137,17 @@ body { line-height: 1.6; }
 <h2 data-number="1" class="anchored" data-anchor-id="はじめに"><span class="header-section-number">1</span> はじめに</h2>
 <p>本資料は統計言語<strong>R</strong>および、そのIDE（統合開発環境）である<strong>R Studio</strong>を用いて計量経済分析を行なう際のコードの書き方を教えるものである。本資料の目標として、相澤ゼミに所属するゼミ生が、計量経済学の方法論（OLS回帰分析や固定効果モデル等）を用いてレポート・卒業論文を書く際に、一通りの作業を滞りなく実行出来るようになることを目指す。</p>
 <p>＊本資料はRおよびR Studioをダウンロードした前提で進める。 今からダウンロードする場合、ネット上にダウンロード方法が説明されたWebサイトが多数存在するため、まずはそちらを参照されたい。</p>
-<p>ここでは、実際に分析を行なう前の基本的な操作方法について説明する。</p>
-<section id="準備コードはどこに書くのか" class="level3" data-number="1.1">
-<h3 data-number="1.1" class="anchored" data-anchor-id="準備コードはどこに書くのか"><span class="header-section-number">1.1</span> 準備（コードはどこに書くのか？）</h3>
+<p>本章では、<strong>Rの超基本操作</strong>と、Rで分析を行なう際に必要不可欠な<strong>パッケージ</strong>について説明する。</p>
+</section>
+<section id="rの超基本操作" class="level2" data-number="2">
+<h2 data-number="2" class="anchored" data-anchor-id="rの超基本操作"><span class="header-section-number">2</span> Rの超基本操作</h2>
+<section id="準備コードはどこに書くのか" class="level3" data-number="2.1">
+<h3 data-number="2.1" class="anchored" data-anchor-id="準備コードはどこに書くのか"><span class="header-section-number">2.1</span> 準備（コードはどこに書くのか？）</h3>
 <p>まず第1に、私たちは<u>R Studioを用いて分析を行なう</u>（Rは操作を行なうための言語）。</p>
 <p>R Studioを開くと、以下の様な画面が表示されるはずだ。</p>
 <div class="quarto-figure quarto-figure-center">
 <figure class="figure">
-<p><img src="R_Studio_画面(1).jpg" class="img-fluid figure-img"></p>
+<p><img src="R_Studio_画面(1).jpg" class="img-fluid figure-img" style="width:70.0%"></p>
 <figcaption>R Studio起動時の画面とR Scriptの作成</figcaption>
 </figure>
 </div>
@@ -151,7 +155,7 @@ body { line-height: 1.6; }
 <p>R Scriptを開くと下の画像のような状態となり、それぞれの部分がそれぞれの役割を有している。</p>
 <div class="quarto-figure quarto-figure-center">
 <figure class="figure">
-<p><img src="R_Studio_画面(2).jpg" class="img-fluid figure-img"></p>
+<p><img src="R_Studio_画面(2).jpg" class="img-fluid figure-img" style="width:70.0%"></p>
 <figcaption>R Studioでの基本的な配置画面と各部分の機能</figcaption>
 </figure>
 </div>
@@ -159,25 +163,24 @@ body { line-height: 1.6; }
 <ol type="1">
 <li>R Scriptを作成し、画面左上の<span style="color:red;">□</span>部分でコードを打ち込んで実行する（実行は<span style="color:red;">□</span>の右上にある<em>Run</em>や<em>Source</em>ボタン）<a href="#fn1" class="footnote-ref" id="fnref1" role="doc-noteref"><sup>1</sup></a></li>
 </ol>
-<!-- -->
 <ol start="2" type="1">
 <li><p>実行された結果は画面左下の□部分(Console)、図表などは画面右の<span style="color:blue;">□</span>下側(Plots, Viewer, etc.)に表示される</p></li>
 <li><p>適宜R Scriptを<span style="color:green;">○</span>内の保存ボタンで保存する</p></li>
 <li><p>1度閉じたR Scriptは<span style="color:purple;">○</span>の開くボタンで呼び出す</p></li>
 </ol>
 </section>
-<section id="基本的に用いる表現数式" class="level3" data-number="1.2">
-<h3 data-number="1.2" class="anchored" data-anchor-id="基本的に用いる表現数式"><span class="header-section-number">1.2</span> 基本的に用いる表現・数式</h3>
+<section id="基本的に用いる表現数式" class="level3" data-number="2.2">
+<h3 data-number="2.2" class="anchored" data-anchor-id="基本的に用いる表現数式"><span class="header-section-number">2.2</span> 基本的に用いる表現・数式</h3>
 <p>以下からは、実際にR Script内にコードを書いて実行していく。<span style="color:grey; background-color:#EEEEEE;">薄い灰色で覆われている部分</span>がRコードであり、そのすぐ下側の部分はコードが実行されて返された結果である。</p>
-<section id="コメント" class="level4" data-number="1.2.1">
-<h4 data-number="1.2.1" class="anchored" data-anchor-id="コメント"><span class="header-section-number">1.2.1</span> コメント</h4>
+<section id="コメント" class="level4" data-number="2.2.1">
+<h4 data-number="2.2.1" class="anchored" data-anchor-id="コメント"><span class="header-section-number">2.2.1</span> コメント</h4>
 <div class="cell">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="co"># #マークの後に記入される内容は、コードに一切影響を与えない</span></span>
 <span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="co"># 他者が見ても理解できるように、#でコードの説明・何をしているのかを適宜残しておくと良い</span></span></code></pre></div><button title="コピー" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
 </section>
-<section id="四則演算" class="level4" data-number="1.2.2">
-<h4 data-number="1.2.2" class="anchored" data-anchor-id="四則演算"><span class="header-section-number">1.2.2</span> 四則演算</h4>
+<section id="四則演算" class="level4" data-number="2.2.2">
+<h4 data-number="2.2.2" class="anchored" data-anchor-id="四則演算"><span class="header-section-number">2.2.2</span> 四則演算</h4>
 <div class="cell">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb2"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="dv">5</span> <span class="sc">+</span> <span class="dv">3</span>    <span class="co"># 足し算</span></span></code></pre></div><button title="コピー" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stdout">
@@ -197,8 +200,8 @@ body { line-height: 1.6; }
 </div>
 </div>
 </section>
-<section id="文字列の操作" class="level4" data-number="1.2.3">
-<h4 data-number="1.2.3" class="anchored" data-anchor-id="文字列の操作"><span class="header-section-number">1.2.3</span> 文字列の操作</h4>
+<section id="文字列の操作" class="level4" data-number="2.2.3">
+<h4 data-number="2.2.3" class="anchored" data-anchor-id="文字列の操作"><span class="header-section-number">2.2.3</span> 文字列の操作</h4>
 <p>R上で文字列を操作する場合、必ず<code>""</code>か<code>''</code>で囲む必要がある。</p>
 <div class="cell">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb10"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a><span class="st">"相澤ゼミ"</span> <span class="co"># ただ文字列を書いて実行すると、その文字列がConsoleに返される </span></span></code></pre></div><button title="コピー" class="code-copy-button"><i class="bi"></i></button></div>
@@ -211,8 +214,8 @@ body { line-height: 1.6; }
 </div>
 </div>
 </section>
-<section id="ベクトル" class="level4" data-number="1.2.4">
-<h4 data-number="1.2.4" class="anchored" data-anchor-id="ベクトル"><span class="header-section-number">1.2.4</span> ベクトル</h4>
+<section id="ベクトル" class="level4" data-number="2.2.4">
+<h4 data-number="2.2.4" class="anchored" data-anchor-id="ベクトル"><span class="header-section-number">2.2.4</span> ベクトル</h4>
 <p>Rでは<code>4</code>や<code>'こんにちは'</code>等の1つのデータのみならず、複数のデータが繋がった<strong>ベクトル</strong>（例：<code>(3, 4)</code>, <code>("こんにちは", "さようなら")</code> は2つのデータが繋がったベクトル）を用いた操作が可能である。<a href="#fn2" class="footnote-ref" id="fnref2" role="doc-noteref"><sup>2</sup></a></p>
 <p>ベクトルを用いる際は各データを<code>,</code>でつなぎ、全体を<code>c()</code>で囲む。</p>
 <div class="cell">
@@ -231,8 +234,8 @@ body { line-height: 1.6; }
 </div>
 </div>
 </section>
-<section id="代入" class="level4" data-number="1.2.5">
-<h4 data-number="1.2.5" class="anchored" data-anchor-id="代入"><span class="header-section-number">1.2.5</span> 代入</h4>
+<section id="代入" class="level4" data-number="2.2.5">
+<h4 data-number="2.2.5" class="anchored" data-anchor-id="代入"><span class="header-section-number">2.2.5</span> 代入</h4>
 <p>Rの作業で特定のデータを何回も用いる際、いちいちコードを打つのは面倒くさい。そこで、そのようなデータを何らかの文字 (<code>x</code>や<code>a</code>)に<strong>代入</strong>することで、作業を素早く、簡単に進めることが出来る。</p>
 <p>代入は基本的に<code>何らかの文字(object) &lt;- 代入したいデータ</code>で実行され、代入されたデータは画面右上のEnviromentという空間で確認することが出来る。</p>
 <div class="cell">
@@ -249,8 +252,8 @@ body { line-height: 1.6; }
 </div>
 </div>
 </section>
-<section id="関数" class="level4" data-number="1.2.6">
-<h4 data-number="1.2.6" class="anchored" data-anchor-id="関数"><span class="header-section-number">1.2.6</span> 関数</h4>
+<section id="関数" class="level4" data-number="2.2.6">
+<h4 data-number="2.2.6" class="anchored" data-anchor-id="関数"><span class="header-section-number">2.2.6</span> 関数</h4>
 <p>統計ソフトを用いる目的は<u>手計算では困難な操作をコンピュータに行なってもらうこと</u>であり、それらを実行するために用いるのが<strong>関数</strong>である。以下で元からRに内蔵されている関数を軽く紹介する。</p>
 <div class="cell">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb24"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb24-1"><a href="#cb24-1" aria-hidden="true" tabindex="-1"></a><span class="co"># sum(): ベクトル内の値を合計する</span></span>
@@ -269,10 +272,10 @@ body { line-height: 1.6; }
 <pre><code>[1] 4</code></pre>
 </div>
 </div>
-<p>上記の様なR内蔵の関数を使う場面は多くあるものの、全てがそうである訳ではなく、多くの場合<strong>パッケージ</strong>というものを読み込み、その中に含まれている関数を用いる。パッケージの詳細は次節<a href="#sec-package">パッケージのインストールと読み込み</a>を参照。</p>
+<p>上記の様なR内蔵の関数を使う場面は少なくないものの、全てがそうである訳ではなく、多くの場合<strong>パッケージ</strong>というものを読み込み、その中に含まれている関数を用いる。パッケージの詳細は次節<a href="#sec-package">パッケージ</a>を参照。</p>
 </section>
-<section id="データ型numeric数値とcharacter文字列" class="level4" data-number="1.2.7">
-<h4 data-number="1.2.7" class="anchored" data-anchor-id="データ型numeric数値とcharacter文字列"><span class="header-section-number">1.2.7</span> データ型：numeric（数値）とcharacter（文字列）</h4>
+<section id="データ型numeric数値とcharacter文字列" class="level4" data-number="2.2.7">
+<h4 data-number="2.2.7" class="anchored" data-anchor-id="データ型numeric数値とcharacter文字列"><span class="header-section-number">2.2.7</span> データ型：numeric（数値）とcharacter（文字列）</h4>
 <p>コードで操作されるデータにはそれぞれ<strong>データ型</strong>と言うものが存在する。 Rに内蔵される<code>class()</code>という関数を使うと、そのデータ型が何かを知ることが出来る。</p>
 <div class="cell">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb30"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb30-1"><a href="#cb30-1" aria-hidden="true" tabindex="-1"></a><span class="fu">class</span>(<span class="dv">1234</span>)       <span class="co"># 1234というデータの型を確認</span></span></code></pre></div><button title="コピー" class="code-copy-button"><i class="bi"></i></button></div>
@@ -284,16 +287,18 @@ body { line-height: 1.6; }
 <pre><code>[1] "character"</code></pre>
 </div>
 </div>
-<p><code>1234</code>や<code>3.14</code>などの様な数値は<strong>numeric型（数値型）</strong>に分類され、<code>"こんにちは"</code>や<code>"hello world"</code>の様な文字列は<strong>character型（文字列型）</strong>と呼ばれる。データ型は上記の2つだけではなく、非常に様々な種類が存在するため、教科書やWeb資料を適宜確認することを強く薦める。<a href="#fn3" class="footnote-ref" id="fnref3" role="doc-noteref"><sup>3</sup></a></p>
+<p><code>1234</code>や<code>3.14</code>などの様な数値は<strong>numeric型（数値型）</strong>に分類され、<code>"こんにちは"</code>や<code>"hello world"</code>の様な文字列は<strong>character型（文字列型）</strong>と呼ばれる。データ型は上記の2つだけではなく、非常に様々な種類(data.frame, matrix, logical, factor, etc.)が存在するため、教科書やWeb資料を適宜確認することを強く薦める。<a href="#fn3" class="footnote-ref" id="fnref3" role="doc-noteref"><sup>3</sup></a></p>
 <div class="callout callout-style-default callout-warning callout-titled">
-<div class="callout-header d-flex align-content-center">
+<div class="callout-header d-flex align-content-center collapsed" data-bs-toggle="collapse" data-bs-target=".callout-1-contents" aria-controls="callout-1" aria-expanded="false" aria-label="Toggle callout">
 <div class="callout-icon-container">
 <i class="callout-icon"></i>
 </div>
 <div class="callout-title-container flex-fill">
 <span class="screen-reader-only">警告</span>データ型はこまめにチェックしよう！！
 </div>
+<div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
 </div>
+<div id="callout-1" class="callout-1-contents callout-collapse collapse">
 <div class="callout-body-container callout-body">
 <p>一見重要ではなさそうなデータ型だが、筆者自身が卒論で最も苦しんだのは、このデータ型を原因とするエラーであった。以下は簡単な誤りの例だが、<code>sum()</code>の中にcharacter型を含めることは出来ないため、エラーが表示されている。</p>
 <div class="cell">
@@ -305,65 +310,70 @@ body { line-height: 1.6; }
 <p>numeric型の<code>2700</code>とcharacter型の<code>"2700"</code>は、コンピュータ内では完全に別物として扱われ、上記の<code>sum()</code>のように特定のデータ型しか受け付けない関数が多く存在する。しかしながら、私たちが分析において数千～数万という規模のデータを見た際に、どの値がどのデータ型かを視覚的に見分けるのは難しい。分析を行なう際は、このような<u>データ型の違い・ズレ</u>に注意してコードを書き進めていかなければならない。</p>
 </div>
 </div>
+</div>
 </section>
 </section>
 </section>
-<section id="sec-package" class="level2" data-number="2">
-<h2 data-number="2" class="anchored" data-anchor-id="sec-package"><span class="header-section-number">2</span> パッケージのインストールと読み込み</h2>
-<p>Rで分析やデータの編集を行なう際、<strong>パッケージ</strong>というものが必要不可欠。パッケージとは、<u>R上で実行出来る関数やデータセットの集まり</u>のようなものである。</p>
-<p>私たちが何か料理（目的となる分析）を行なう際、様々な調理器具（関数）や具材（データセット）を用いることになるが、パッケージはいわば調理器具セット or 具材セットに例えられ、そのセットの中から目的に合った調理器具・具材を利用する。</p>
-<section id="パッケージのインストール" class="level3" data-number="2.1">
-<h3 data-number="2.1" class="anchored" data-anchor-id="パッケージのインストール"><span class="header-section-number">2.1</span> パッケージのインストール</h3>
-<p>パッケージの<strong>インストール</strong>は、いわばお店でそれらのセットを<u>購入</u>することを意味する。試しに{tidyverse}という名前のパッケージをインストールする。 Rに内蔵されている<code>install.packages("パッケージ名")</code>という関数を使う。</p>
+<section id="sec-package" class="level2" data-number="3">
+<h2 data-number="3" class="anchored" data-anchor-id="sec-package"><span class="header-section-number">3</span> パッケージ</h2>
+<p>Rで分析やデータの編集を行なう際、<strong>パッケージ</strong>というものが必要不可欠。パッケージとは、<u>R上で実行出来る関数やデータの集まり</u>である。</p>
+<p>私たちが何か料理（目的となる分析）を行なう際、様々な調理器具（関数）や具材（データ）を用いることになるが、パッケージはいわば調理器具セット or 具材セットに例えられ、そのセットの中から目的に合った調理器具・具材を利用する。</p>
+<section id="パッケージのインストール" class="level3" data-number="3.1">
+<h3 data-number="3.1" class="anchored" data-anchor-id="パッケージのインストール"><span class="header-section-number">3.1</span> パッケージのインストール</h3>
+<p>パッケージの<strong>インストール</strong>は、いわばお店でそれらのセットを<u>購入</u>することを意味する。試しに{purrr}という名前のパッケージをインストールする。 Rに内蔵されている<code>install.packages("パッケージ名")</code>という関数を使う。</p>
 <div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb36"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb36-1"><a href="#cb36-1" aria-hidden="true" tabindex="-1"></a><span class="fu">install.packages</span>(<span class="st">"tidyverse"</span>)</span></code></pre></div><button title="コピー" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb36"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb36-1"><a href="#cb36-1" aria-hidden="true" tabindex="-1"></a><span class="fu">install.packages</span>(<span class="st">"purrr"</span>)</span></code></pre></div><button title="コピー" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
 <p>本資料では結果が表示されていないが、皆さんが実行した際は、以下の様な文言が出ていれば無事にインストールされている。</p>
-<p><code>パッケージ ‘tidyverse’ は無事に展開され、MD5 サムもチェックされました</code></p>
+<p><code>パッケージ ‘purrr’ は無事に展開され、MD5 サムもチェックされました</code></p>
 <p><code>ダウンロードされたパッケージは、以下にあります</code></p>
 <p><code>C:\Users\～(人によって異なるファイルのパス名)</code></p>
-<p>一度インストールしたパッケージは、PCのファイル内に保存されるため、次回起動時にインストールする必要はない。<a href="#fn4" class="footnote-ref" id="fnref4" role="doc-noteref"><sup>4</sup></a></p>
+<p>一度インストールしたパッケージは、PCのファイル内に保存されるため、<u>次回起動時にインストールする必要はない</u>。<a href="#fn4" class="footnote-ref" id="fnref4" role="doc-noteref"><sup>4</sup></a></p>
 </section>
-<section id="パッケージの読み込み" class="level3" data-number="2.2">
-<h3 data-number="2.2" class="anchored" data-anchor-id="パッケージの読み込み"><span class="header-section-number">2.2</span> パッケージの読み込み</h3>
+<section id="パッケージの読み込み" class="level3" data-number="3.2">
+<h3 data-number="3.2" class="anchored" data-anchor-id="パッケージの読み込み"><span class="header-section-number">3.2</span> パッケージの読み込み</h3>
 <p>パッケージのインストールと<strong>読み込み</strong>は異なる操作である。</p>
-<p>あなたは調理器具セット・具材セットを購入（インストール）したが、調理器具は棚へ、具材は冷蔵庫にしまうはずだ。そして、いざ調理（分析）に用いる際にそこから<strong>取り出して</strong>使用しなければならない。パッケージの読み込みは、この<u>取り出し</u>に相当する。</p>
-<p>先ほどの{tidyvese}というパッケージを今度は読み込んでみる。使う関数は<code>library(パッケージ名)</code>または<code>require(パッケージ名)</code>。</p>
+<p>あなたは調理器具セット・具材セットを購入（インストール）したが、調理器具は棚へ、具材は冷蔵庫にしまうはずだ。そして、いざ調理（分析）に用いる際にそこから<strong>取り出して</strong>使用しなければならない。パッケージの読み込みは、この<strong>取り出し</strong>に相当する。</p>
+<p>先ほどの{purrr}というパッケージを今度は読み込んでみる。使う関数は<code>library(パッケージ名)</code>または<code>require(パッケージ名)</code>。</p>
 <div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb37"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb37-1"><a href="#cb37-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(tidyverse)</span></code></pre></div><button title="コピー" class="code-copy-button"><i class="bi"></i></button></div>
-<div class="cell-output cell-output-stderr">
-<pre><code>Warning: package 'tidyverse' was built under R version 4.5.2</code></pre>
-</div>
-<div class="cell-output cell-output-stderr">
-<pre><code>Warning: package 'ggplot2' was built under R version 4.5.2</code></pre>
-</div>
-<div class="cell-output cell-output-stderr">
-<pre><code>Warning: package 'readr' was built under R version 4.5.2</code></pre>
-</div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb37"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb37-1"><a href="#cb37-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(purrr)</span></code></pre></div><button title="コピー" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stderr">
 <pre><code>Warning: package 'purrr' was built under R version 4.5.2</code></pre>
 </div>
-<div class="cell-output cell-output-stderr">
-<pre><code>Warning: package 'dplyr' was built under R version 4.5.2</code></pre>
 </div>
-<div class="cell-output cell-output-stderr">
-<pre><code>Warning: package 'stringr' was built under R version 4.5.2</code></pre>
+<p>何やら<code>Warning</code>が出力されているが無視してOK。Rにおいて<code>Warning</code>が表示されたとき、コード自体は実行されており、一応の注意点・説明をRのソフトが教えてくれている状態である。<a href="#fn5" class="footnote-ref" id="fnref5" role="doc-noteref"><sup>5</sup></a> ただし<code>Error</code>が表示された場合、コードが正しく実行されていないため、何らかの修正が必要である。</p>
+<p>一度読み込んだパッケージはRのソフトが終了すると、自動的に棚・冷蔵庫に戻ってしまう。そのため、<u>分析者はRを起動するたびに<code>library()</code>,<code>require()</code>でパッケージを呼び出さなければならない</u>。</p>
+<div class="callout callout-style-default callout-note callout-titled">
+<div class="callout-header d-flex align-content-center collapsed" data-bs-toggle="collapse" data-bs-target=".callout-2-contents" aria-controls="callout-2" aria-expanded="false" aria-label="Toggle callout">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
 </div>
-<div class="cell-output cell-output-stderr">
-<pre><code>── Attaching core tidyverse packages ──────────────────────── tidyverse 2.0.0 ──
-✔ dplyr     1.1.4     ✔ readr     2.1.6
-✔ forcats   1.0.1     ✔ stringr   1.6.0
-✔ ggplot2   4.0.1     ✔ tibble    3.3.0
-✔ lubridate 1.9.4     ✔ tidyr     1.3.1
-✔ purrr     1.2.0     
-── Conflicts ────────────────────────────────────────── tidyverse_conflicts() ──
-✖ dplyr::filter() masks stats::filter()
-✖ dplyr::lag()    masks stats::lag()
-ℹ Use the conflicted package (&lt;http://conflicted.r-lib.org/&gt;) to force all conflicts to become errors</code></pre>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">ノート</span>パッケージを読み込まずに関数を利用する
+</div>
+<div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
+</div>
+<div id="callout-2" class="callout-2-contents callout-collapse collapse">
+<div class="callout-body-container callout-body">
+<p>上記の内容では、あるパッケージに含まれる関数・データを用いる際に、以下の手順が必要であることを説明した。</p>
+<ol type="1">
+<li><code>install.packages()</code>でパッケージをインストール</li>
+<li><code>library()</code>または<code>require()</code>でパッケージの読み込み</li>
+</ol>
+<p>しかし、手順の2番目である「パッケージの読み込み」を行なわなくても、該当の関数・データを利用できる方法がある。それは、それらのコードの前に<code>パッケージ名::</code>を付けることだ。</p>
+<p>以下は、先ほど読み込んだ{purrr}というパッケージにある<code>map_dbl()</code>という関数を利用する例だ。<code>library(purrr)</code>で事前にパッケージを読み込まなくとも、<code>purrr::</code>と書けば{purrr}に含まれる関数を利用できる。</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb39"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb39-1"><a href="#cb39-1" aria-hidden="true" tabindex="-1"></a><span class="co"># c(1, 2, 3)ベクトルの各要素に5を足す</span></span>
+<span id="cb39-2"><a href="#cb39-2" aria-hidden="true" tabindex="-1"></a>purrr<span class="sc">::</span><span class="fu">map_dbl</span>(<span class="fu">c</span>(<span class="dv">1</span>,<span class="dv">2</span>,<span class="dv">3</span>), <span class="st">`</span><span class="at">+</span><span class="st">`</span>, <span class="dv">5</span>)</span></code></pre></div><button title="コピー" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] 6 7 8</code></pre>
 </div>
 </div>
-<p>何やら大量に<code>Warning</code>や<code>Conflicts</code>などが出力されているが、取りあえず無視してOK。Rにおいて<code>Warning</code>が表示されたとき、コード自体は実行されており、一応の懸念点をRのソフトが教えてくれている状態である。<a href="#fn5" class="footnote-ref" id="fnref5" role="doc-noteref"><sup>5</sup></a> ただし<code>Error</code>が表示された場合、コードが正しく実行されていないため、何らかの修正が必要である。</p>
-<p>一度読み込んだパッケージはRのソフトが終了すると、自動的に棚・冷蔵庫に戻ってしまう。そのため、分析者はRを起動するたびに<code>library()</code>,<code>require()</code>でパッケージを呼び出さなければならない。</p>
+<p>この利用方法のメリットは<strong>該当の関数・データがどのパッケージに属するか一目で分かる</strong>ことだ。パッケージは世界中のR利用者が製作可能であるため、異なる2つのパッケージに同じ名前の関数・データが含まれることが時々ある。<a href="#fn6" class="footnote-ref" id="fnref6" role="doc-noteref"><sup>6</sup></a> こういった状況下で、分析者が用いるものがどのパッケージに属するものかを明記することは、他の研究者がコードを読む際の誤解を防ぐ利点がある。</p>
+<p>しかしながら、毎度関数を利用する際に<code>パッケージ名::</code>を書くのは煩わしいため、普段は<code>library()</code>か<code>require()</code>でパッケージを読み込んで利用する方が良いと思う。<a href="#fn7" class="footnote-ref" id="fnref7" role="doc-noteref"><sup>7</sup></a></p>
+</div>
+</div>
+</div>
 </section>
 </section>
 
@@ -373,9 +383,11 @@ body { line-height: 1.6; }
 <ol>
 <li id="fn1"><p><em>Run</em>はスクリプト内で指定した部分を実行し、<em>Source</em>はスクリプト内の全てのコードを実行する。また、<em>Run</em>はキーボードの Ctrl + Enter でも可能。<a href="#fnref1" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
 <li id="fn2"><p>1つのデータ自体も長さが1のベクトルである。<a href="#fnref2" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
-<li id="fn3"><p>Web資料としては<a href="https://www.jaysong.net/RBook/datatype.html" target="_blank">「私たちのR　9 データ型」</a>が良いと思う。<a href="#fnref3" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
+<li id="fn3"><p>Web資料としては<a href="https://www.jaysong.net/RBook/datatype.html" target="_blank">「私たちのR 9 データ型」</a>が良いと思う。<a href="#fnref3" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
 <li id="fn4"><p>パッケージは時々新しい関数の追加・既存の関数の変更が行なわれるため、その際は必要に応じて再度<code>install.packages()</code>を行なってアップデートすれば良い。<a href="#fnref4" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
 <li id="fn5"><p>別の関数を使用する際に出力されるWarningは少し気にしとくと良い。<a href="#fnref5" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
+<li id="fn6"><p>{dplyr}パッケージの<code>filter()</code>と{stats}パッケージの<code>filter()</code>など<a href="#fnref6" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
+<li id="fn7"><p>関数名のかぶり自体が稀で、課題レポートや卒論において問題になることはほとんどないと思われる。<a href="#fnref7" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
 </ol>
 </section></div></main>
 <!-- /main column -->

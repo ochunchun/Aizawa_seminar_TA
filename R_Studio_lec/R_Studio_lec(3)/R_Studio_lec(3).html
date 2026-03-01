@@ -8,7 +8,7 @@
 
 <meta name="author" content="成田慶之">
 
-<title>R Studioで計量経済分析(3)</title>
+<title>(3) 記述統計量の表示</title>
 <style>
 code{white-space: pre-wrap;}
 span.smallcaps{font-variant: small-caps;}
@@ -72,35 +72,6 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <link href="R_Studio_lec(3)_files/libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
 <link href="R_Studio_lec(3)_files/libs/bootstrap/bootstrap-bf9c365f04f5e76c06248f615b2c163a.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
 
-  <script src="https://cdnjs.cloudflare.com/polyfill/v3/polyfill.min.js?features=es6"></script>
-  <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml-full.js" type="text/javascript"></script>
-
-<script type="text/javascript">
-const typesetMath = (el) => {
-  if (window.MathJax) {
-    // MathJax Typeset
-    window.MathJax.typeset([el]);
-  } else if (window.katex) {
-    // KaTeX Render
-    var mathElements = el.getElementsByClassName("math");
-    var macros = [];
-    for (var i = 0; i < mathElements.length; i++) {
-      var texText = mathElements[i].firstChild;
-      if (mathElements[i].tagName == "SPAN" && texText && texText.data) {
-        window.katex.render(texText.data, mathElements[i], {
-          displayMode: mathElements[i].classList.contains('display'),
-          throwOnError: false,
-          macros: macros,
-          fleqn: false
-        });
-      }
-    }
-  }
-}
-window.Quarto = {
-  typesetMath
-};
-</script>
 
 </head>
 
@@ -112,12 +83,14 @@ window.Quarto = {
     <h2 id="toc-title">目次</h2>
    
   <ul>
-  <li><a href="#分析結果の出力" id="toc-分析結果の出力" class="nav-link active" data-scroll-target="#分析結果の出力"><span class="header-section-number">1</span> 分析結果の出力</a>
+  <li><a href="#はじめに" id="toc-はじめに" class="nav-link active" data-scroll-target="#はじめに"><span class="header-section-number">1</span> はじめに</a></li>
+  <li><a href="#事前準備" id="toc-事前準備" class="nav-link" data-scroll-target="#事前準備"><span class="header-section-number">2</span> 事前準備</a></li>
+  <li><a href="#記述統計量の表示" id="toc-記述統計量の表示" class="nav-link" data-scroll-target="#記述統計量の表示"><span class="header-section-number">3</span> 記述統計量の表示</a>
   <ul class="collapse">
-  <li><a href="#事前準備" id="toc-事前準備" class="nav-link" data-scroll-target="#事前準備"><span class="header-section-number">1.1</span> 事前準備</a></li>
-  <li><a href="#stargazer" id="toc-stargazer" class="nav-link" data-scroll-target="#stargazer"><span class="header-section-number">1.2</span> stargazer</a></li>
-  <li><a href="#modelsummary" id="toc-modelsummary" class="nav-link" data-scroll-target="#modelsummary"><span class="header-section-number">1.3</span> modelsummary</a></li>
-  <li><a href="#レポートなどに記載する方法" id="toc-レポートなどに記載する方法" class="nav-link" data-scroll-target="#レポートなどに記載する方法"><span class="header-section-number">1.4</span> レポートなどに記載する方法</a></li>
+  <li><a href="#そもそも記述統計量とは" id="toc-そもそも記述統計量とは" class="nav-link" data-scroll-target="#そもそも記述統計量とは"><span class="header-section-number">3.1</span> そもそも記述統計量とは？</a></li>
+  <li><a href="#計量経済分析を用いたレポートの流れ" id="toc-計量経済分析を用いたレポートの流れ" class="nav-link" data-scroll-target="#計量経済分析を用いたレポートの流れ"><span class="header-section-number">3.2</span> 計量経済分析を用いたレポートの流れ</a></li>
+  <li><a href="#記述統計量を表示する関数" id="toc-記述統計量を表示する関数" class="nav-link" data-scroll-target="#記述統計量を表示する関数"><span class="header-section-number">3.3</span> 記述統計量を表示する関数</a></li>
+  <li><a href="#記述統計量を別のファイル形式で書き出す" id="toc-記述統計量を別のファイル形式で書き出す" class="nav-link" data-scroll-target="#記述統計量を別のファイル形式で書き出す"><span class="header-section-number">3.4</span> 記述統計量を別のファイル形式で書き出す</a></li>
   </ul></li>
   </ul>
 </nav>
@@ -126,7 +99,7 @@ window.Quarto = {
 
 <header id="title-block-header" class="quarto-title-block default">
 <div class="quarto-title">
-<h1 class="title">R Studioで計量経済分析(3)</h1>
+<h1 class="title">(3) 記述統計量の表示</h1>
 </div>
 
 
@@ -144,7 +117,7 @@ window.Quarto = {
     <div>
     <div class="quarto-title-meta-heading">更新日</div>
     <div class="quarto-title-meta-contents">
-      <p class="date-modified">2026年1月31日</p>
+      <p class="date-modified">2026年2月26日</p>
     </div>
   </div>
     
@@ -155,138 +128,643 @@ window.Quarto = {
 </header>
 
 
-<p>本章では、<a href="https://ochunchun.github.io/Aizawa_seminar_TA/R_Studio_lec/R_Studio_lec(1)/R_Studio_lec(1).html">R Studioで計量経済分析(1)</a>で紹介した、OLS回帰分析について、見やすい結果の出力・追加の分析方法をより詳細に説明する。</p>
-<section id="分析結果の出力" class="level2" data-number="1">
-<h2 data-number="1" class="anchored" data-anchor-id="分析結果の出力"><span class="header-section-number">1</span> 分析結果の出力</h2>
-<p><a href="https://ochunchun.github.io/Aizawa_seminar_TA/R_Studio_lec/R_Studio_lec(1)/R_Studio_lec(1).html">R Studioで計量経済分析(1)</a>では<code>summary()</code>関数を用いて結果を出力したが、あまり見やすいものではなかった。</p>
-<p>ここでは<code>summary()</code>以外で、結果を見やすく出力する関数について紹介する。</p>
-<section id="事前準備" class="level3" data-number="1.1">
-<h3 data-number="1.1" class="anchored" data-anchor-id="事前準備"><span class="header-section-number">1.1</span> 事前準備</h3>
-<p>この節での本題は<strong>結果の出力</strong>であるため、先にOLS回帰分析を済ませてしまおう。</p>
-<p>今回はパッケージ{wooldridge}のmrozというデータから、以下2つのミンサー型賃金関数を推定する。</p>
-<p><span class="math display">\[
-\begin{align}
-wage_{i} &amp;= \beta_{0} + \beta_{1}educ_{i} + \beta_{2}exper_{i} + u_{i} \tag{1}\\
-wage_{i} &amp;= \beta_{0} + \beta_{1}educ_{i}  + \beta_{2}exper_{i} + \beta_{3}exper_{i}^2 + u_{i} \tag{2}
-\end{align}
-\]</span></p>
-<p><span class="math inline">\(i\)</span>は各標本個体を示しており、<span class="math inline">\(u_{i}\)</span>は誤差項である。 各変数について、<span class="math inline">\(wage_{i}\)</span> (時間当たり賃金), <span class="math inline">\(educ_{i}\)</span> (教育年数), <span class="math inline">\(exper_{i}\)</span> (労働市場での経験年数)を示している。(1)と異なり、(2)の賃金関数には<span class="math inline">\(exper_{i}\)</span>の2乗項を含めた。</p>
+<section id="はじめに" class="level2" data-number="1">
+<h2 data-number="1" class="anchored" data-anchor-id="はじめに"><span class="header-section-number">1</span> はじめに</h2>
+<p>前の2つの章ではRの基本的な操作方法を解説してきた。ここからは少し進んで、Rを用いた基本的な計量経済分析の方法に焦点を当てながら進んでいく。</p>
+<p>本章では、計量経済分析を用いてレポートを作成する際に必要となる<strong>記述統計量の表示方法</strong>について概説する。</p>
+</section>
+<section id="事前準備" class="level2" data-number="2">
+<h2 data-number="2" class="anchored" data-anchor-id="事前準備"><span class="header-section-number">2</span> 事前準備</h2>
+<p>本題に入る前に、本章で用いるデータを準備する。</p>
+<p>{wooldridge}というパッケージをインストールして読み込もう。本パッケージは ``Introductory Econometrics: A Modern Approach’’ という計量経済学の教科書に付属するパッケージであり、過去に計量経済分析を用いて実際に研究された115個のデータフレームが含まれたものである。</p>
 <div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="co"># wooldridgeを読み込む</span></span>
-<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(wooldridge)</span></code></pre></div><button title="コピー" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="co"># wooldridgeパッケージの読み込み</span></span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="fu">install.packages</span>(<span class="st">"wooldridge"</span>)</span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(wooldridge)</span></code></pre></div><button title="コピー" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
+<p>本章では{wooldridge}における<code>crime4</code>という名前のデータを用いていく。 本データは、1994年に Christopher Cornwell &amp; William N. Trumbull の実証研究において用いられたものである。米国ノースカロライナ州の各郡における、1981～87年の1人当たり犯罪率、逮捕確率、有罪判決率などの犯罪関連データに加え、1人当たり税収入、人口密度、各業界ごとの週賃金などの社会経済データが観測されている。</p>
+<p>スクリプト内に<code>head(crime4)</code>と記入して実行すると、このデータの上から数行を確認できる。</p>
 <div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb2"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="co"># OLS回帰分析を実行し、mincer_1, mincer_2に代入する</span></span>
-<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a>mincer_1 <span class="ot">&lt;-</span> <span class="fu">lm</span>(wage <span class="sc">~</span> educ <span class="sc">+</span> exper, <span class="at">data =</span> mroz)</span>
-<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a>mincer_2 <span class="ot">&lt;-</span> <span class="fu">lm</span>(wage <span class="sc">~</span> educ <span class="sc">+</span> exper <span class="sc">+</span> expersq, <span class="at">data =</span> mroz)</span>
-<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a><span class="co"># 結果を簡単に出力</span></span>
-<span id="cb2-6"><a href="#cb2-6" aria-hidden="true" tabindex="-1"></a>mincer_1</span></code></pre></div><button title="コピー" class="code-copy-button"><i class="bi"></i></button></div>
-<div class="cell-output cell-output-stdout">
-<pre><code>
-Call:
-lm(formula = wage ~ educ + exper, data = mroz)
-
-Coefficients:
-(Intercept)         educ        exper  
-   -2.43169      0.49663      0.02474  </code></pre>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb2"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="fu">head</span>(crime4) <span class="sc">|&gt;</span></span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a>  <span class="co"># kable(): 表の体裁を整える関数であり、皆さんはhead(crime4)だけで良い</span></span>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a>  kableExtra<span class="sc">::</span><span class="fu">kable</span>() </span></code></pre></div><button title="コピー" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output-display">
+<table class="caption-top table table-sm table-striped small">
+<colgroup>
+<col style="width: 1%">
+<col style="width: 0%">
+<col style="width: 1%">
+<col style="width: 1%">
+<col style="width: 1%">
+<col style="width: 1%">
+<col style="width: 1%">
+<col style="width: 1%">
+<col style="width: 1%">
+<col style="width: 1%">
+<col style="width: 0%">
+<col style="width: 1%">
+<col style="width: 1%">
+<col style="width: 1%">
+<col style="width: 1%">
+<col style="width: 1%">
+<col style="width: 1%">
+<col style="width: 1%">
+<col style="width: 1%">
+<col style="width: 1%">
+<col style="width: 1%">
+<col style="width: 1%">
+<col style="width: 1%">
+<col style="width: 1%">
+<col style="width: 1%">
+<col style="width: 0%">
+<col style="width: 0%">
+<col style="width: 0%">
+<col style="width: 0%">
+<col style="width: 0%">
+<col style="width: 0%">
+<col style="width: 1%">
+<col style="width: 1%">
+<col style="width: 2%">
+<col style="width: 2%">
+<col style="width: 1%">
+<col style="width: 1%">
+<col style="width: 1%">
+<col style="width: 1%">
+<col style="width: 1%">
+<col style="width: 1%">
+<col style="width: 1%">
+<col style="width: 1%">
+<col style="width: 1%">
+<col style="width: 1%">
+<col style="width: 1%">
+<col style="width: 1%">
+<col style="width: 1%">
+<col style="width: 1%">
+<col style="width: 1%">
+<col style="width: 1%">
+<col style="width: 2%">
+<col style="width: 2%">
+<col style="width: 2%">
+<col style="width: 2%">
+<col style="width: 2%">
+<col style="width: 2%">
+<col style="width: 2%">
+<col style="width: 2%">
+</colgroup>
+<thead>
+<tr class="header">
+<th style="text-align: right;">county</th>
+<th style="text-align: right;">year</th>
+<th style="text-align: right;">crmrte</th>
+<th style="text-align: right;">prbarr</th>
+<th style="text-align: right;">prbconv</th>
+<th style="text-align: right;">prbpris</th>
+<th style="text-align: right;">avgsen</th>
+<th style="text-align: right;">polpc</th>
+<th style="text-align: right;">density</th>
+<th style="text-align: right;">taxpc</th>
+<th style="text-align: right;">west</th>
+<th style="text-align: right;">central</th>
+<th style="text-align: right;">urban</th>
+<th style="text-align: right;">pctmin80</th>
+<th style="text-align: right;">wcon</th>
+<th style="text-align: right;">wtuc</th>
+<th style="text-align: right;">wtrd</th>
+<th style="text-align: right;">wfir</th>
+<th style="text-align: right;">wser</th>
+<th style="text-align: right;">wmfg</th>
+<th style="text-align: right;">wfed</th>
+<th style="text-align: right;">wsta</th>
+<th style="text-align: right;">wloc</th>
+<th style="text-align: right;">mix</th>
+<th style="text-align: right;">pctymle</th>
+<th style="text-align: right;">d82</th>
+<th style="text-align: right;">d83</th>
+<th style="text-align: right;">d84</th>
+<th style="text-align: right;">d85</th>
+<th style="text-align: right;">d86</th>
+<th style="text-align: right;">d87</th>
+<th style="text-align: right;">lcrmrte</th>
+<th style="text-align: right;">lprbarr</th>
+<th style="text-align: right;">lprbconv</th>
+<th style="text-align: right;">lprbpris</th>
+<th style="text-align: right;">lavgsen</th>
+<th style="text-align: right;">lpolpc</th>
+<th style="text-align: right;">ldensity</th>
+<th style="text-align: right;">ltaxpc</th>
+<th style="text-align: right;">lwcon</th>
+<th style="text-align: right;">lwtuc</th>
+<th style="text-align: right;">lwtrd</th>
+<th style="text-align: right;">lwfir</th>
+<th style="text-align: right;">lwser</th>
+<th style="text-align: right;">lwmfg</th>
+<th style="text-align: right;">lwfed</th>
+<th style="text-align: right;">lwsta</th>
+<th style="text-align: right;">lwloc</th>
+<th style="text-align: right;">lmix</th>
+<th style="text-align: right;">lpctymle</th>
+<th style="text-align: right;">lpctmin</th>
+<th style="text-align: right;">clcrmrte</th>
+<th style="text-align: right;">clprbarr</th>
+<th style="text-align: right;">clprbcon</th>
+<th style="text-align: right;">clprbpri</th>
+<th style="text-align: right;">clavgsen</th>
+<th style="text-align: right;">clpolpc</th>
+<th style="text-align: right;">cltaxpc</th>
+<th style="text-align: right;">clmix</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">81</td>
+<td style="text-align: right;">0.0398849</td>
+<td style="text-align: right;">0.289696</td>
+<td style="text-align: right;">0.402062</td>
+<td style="text-align: right;">0.472222</td>
+<td style="text-align: right;">5.61</td>
+<td style="text-align: right;">0.0017868</td>
+<td style="text-align: right;">2.307159</td>
+<td style="text-align: right;">25.69763</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">20.2187</td>
+<td style="text-align: right;">206.4803</td>
+<td style="text-align: right;">333.6209</td>
+<td style="text-align: right;">182.3330</td>
+<td style="text-align: right;">272.4492</td>
+<td style="text-align: right;">215.7335</td>
+<td style="text-align: right;">229.12</td>
+<td style="text-align: right;">409.37</td>
+<td style="text-align: right;">236.24</td>
+<td style="text-align: right;">231.47</td>
+<td style="text-align: right;">0.0999179</td>
+<td style="text-align: right;">0.0876968</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">-3.221757</td>
+<td style="text-align: right;">-1.238923</td>
+<td style="text-align: right;">-0.9111490</td>
+<td style="text-align: right;">-0.7503061</td>
+<td style="text-align: right;">1.724551</td>
+<td style="text-align: right;">-6.327340</td>
+<td style="text-align: right;">0.8360171</td>
+<td style="text-align: right;">3.246399</td>
+<td style="text-align: right;">5.330205</td>
+<td style="text-align: right;">5.810005</td>
+<td style="text-align: right;">5.205835</td>
+<td style="text-align: right;">5.607452</td>
+<td style="text-align: right;">5.374044</td>
+<td style="text-align: right;">5.434246</td>
+<td style="text-align: right;">6.014619</td>
+<td style="text-align: right;">5.464848</td>
+<td style="text-align: right;">5.444450</td>
+<td style="text-align: right;">-2.303407</td>
+<td style="text-align: right;">-2.433870</td>
+<td style="text-align: right;">3.006608</td>
+<td style="text-align: right;">NA</td>
+<td style="text-align: right;">NA</td>
+<td style="text-align: right;">NA</td>
+<td style="text-align: right;">NA</td>
+<td style="text-align: right;">NA</td>
+<td style="text-align: right;">NA</td>
+<td style="text-align: right;">NA</td>
+<td style="text-align: right;">NA</td>
+</tr>
+<tr class="even">
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">82</td>
+<td style="text-align: right;">0.0383449</td>
+<td style="text-align: right;">0.338111</td>
+<td style="text-align: right;">0.433005</td>
+<td style="text-align: right;">0.506993</td>
+<td style="text-align: right;">5.59</td>
+<td style="text-align: right;">0.0017666</td>
+<td style="text-align: right;">2.330254</td>
+<td style="text-align: right;">24.87425</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">20.2187</td>
+<td style="text-align: right;">212.7542</td>
+<td style="text-align: right;">369.2964</td>
+<td style="text-align: right;">189.5414</td>
+<td style="text-align: right;">300.8788</td>
+<td style="text-align: right;">231.5767</td>
+<td style="text-align: right;">240.33</td>
+<td style="text-align: right;">419.70</td>
+<td style="text-align: right;">253.88</td>
+<td style="text-align: right;">236.79</td>
+<td style="text-align: right;">0.1030491</td>
+<td style="text-align: right;">0.0863767</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">-3.261134</td>
+<td style="text-align: right;">-1.084381</td>
+<td style="text-align: right;">-0.8370060</td>
+<td style="text-align: right;">-0.6792581</td>
+<td style="text-align: right;">1.720979</td>
+<td style="text-align: right;">-6.338704</td>
+<td style="text-align: right;">0.8459773</td>
+<td style="text-align: right;">3.213833</td>
+<td style="text-align: right;">5.360138</td>
+<td style="text-align: right;">5.911600</td>
+<td style="text-align: right;">5.244607</td>
+<td style="text-align: right;">5.706708</td>
+<td style="text-align: right;">5.444911</td>
+<td style="text-align: right;">5.482013</td>
+<td style="text-align: right;">6.039540</td>
+<td style="text-align: right;">5.536862</td>
+<td style="text-align: right;">5.467174</td>
+<td style="text-align: right;">-2.272549</td>
+<td style="text-align: right;">-2.449038</td>
+<td style="text-align: right;">3.006608</td>
+<td style="text-align: right;">-0.0393763</td>
+<td style="text-align: right;">0.1545422</td>
+<td style="text-align: right;">0.0741430</td>
+<td style="text-align: right;">0.0710480</td>
+<td style="text-align: right;">-0.0035714</td>
+<td style="text-align: right;">-0.0113640</td>
+<td style="text-align: right;">-0.0325654</td>
+<td style="text-align: right;">0.0308573</td>
+</tr>
+<tr class="odd">
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">83</td>
+<td style="text-align: right;">0.0303048</td>
+<td style="text-align: right;">0.330449</td>
+<td style="text-align: right;">0.525703</td>
+<td style="text-align: right;">0.479705</td>
+<td style="text-align: right;">5.80</td>
+<td style="text-align: right;">0.0018358</td>
+<td style="text-align: right;">2.341801</td>
+<td style="text-align: right;">26.45144</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">20.2187</td>
+<td style="text-align: right;">219.7802</td>
+<td style="text-align: right;">1394.8035</td>
+<td style="text-align: right;">196.6395</td>
+<td style="text-align: right;">309.9696</td>
+<td style="text-align: right;">240.1568</td>
+<td style="text-align: right;">269.70</td>
+<td style="text-align: right;">438.85</td>
+<td style="text-align: right;">250.36</td>
+<td style="text-align: right;">248.58</td>
+<td style="text-align: right;">0.0806787</td>
+<td style="text-align: right;">0.0850909</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">-3.496449</td>
+<td style="text-align: right;">-1.107303</td>
+<td style="text-align: right;">-0.6430188</td>
+<td style="text-align: right;">-0.7345839</td>
+<td style="text-align: right;">1.757858</td>
+<td style="text-align: right;">-6.300291</td>
+<td style="text-align: right;">0.8509204</td>
+<td style="text-align: right;">3.275311</td>
+<td style="text-align: right;">5.392628</td>
+<td style="text-align: right;">7.240509</td>
+<td style="text-align: right;">5.281372</td>
+<td style="text-align: right;">5.736474</td>
+<td style="text-align: right;">5.481292</td>
+<td style="text-align: right;">5.597310</td>
+<td style="text-align: right;">6.084157</td>
+<td style="text-align: right;">5.522900</td>
+<td style="text-align: right;">5.515765</td>
+<td style="text-align: right;">-2.517281</td>
+<td style="text-align: right;">-2.464036</td>
+<td style="text-align: right;">3.006608</td>
+<td style="text-align: right;">-0.2353156</td>
+<td style="text-align: right;">-0.0229220</td>
+<td style="text-align: right;">0.1939871</td>
+<td style="text-align: right;">-0.0553258</td>
+<td style="text-align: right;">0.0368786</td>
+<td style="text-align: right;">0.0384130</td>
+<td style="text-align: right;">0.0614774</td>
+<td style="text-align: right;">-0.2447317</td>
+</tr>
+<tr class="even">
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">84</td>
+<td style="text-align: right;">0.0347259</td>
+<td style="text-align: right;">0.362525</td>
+<td style="text-align: right;">0.604706</td>
+<td style="text-align: right;">0.520104</td>
+<td style="text-align: right;">6.89</td>
+<td style="text-align: right;">0.0018859</td>
+<td style="text-align: right;">2.346420</td>
+<td style="text-align: right;">26.84235</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">20.2187</td>
+<td style="text-align: right;">223.4238</td>
+<td style="text-align: right;">398.8604</td>
+<td style="text-align: right;">200.5629</td>
+<td style="text-align: right;">350.0863</td>
+<td style="text-align: right;">252.4477</td>
+<td style="text-align: right;">281.74</td>
+<td style="text-align: right;">459.17</td>
+<td style="text-align: right;">261.93</td>
+<td style="text-align: right;">264.38</td>
+<td style="text-align: right;">0.0785035</td>
+<td style="text-align: right;">0.0838333</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">-3.360269</td>
+<td style="text-align: right;">-1.014662</td>
+<td style="text-align: right;">-0.5030129</td>
+<td style="text-align: right;">-0.6537265</td>
+<td style="text-align: right;">1.930071</td>
+<td style="text-align: right;">-6.273361</td>
+<td style="text-align: right;">0.8528909</td>
+<td style="text-align: right;">3.289981</td>
+<td style="text-align: right;">5.409071</td>
+<td style="text-align: right;">5.988612</td>
+<td style="text-align: right;">5.301128</td>
+<td style="text-align: right;">5.858180</td>
+<td style="text-align: right;">5.531204</td>
+<td style="text-align: right;">5.640985</td>
+<td style="text-align: right;">6.129421</td>
+<td style="text-align: right;">5.568077</td>
+<td style="text-align: right;">5.577387</td>
+<td style="text-align: right;">-2.544612</td>
+<td style="text-align: right;">-2.478925</td>
+<td style="text-align: right;">3.006608</td>
+<td style="text-align: right;">0.1361797</td>
+<td style="text-align: right;">0.0926411</td>
+<td style="text-align: right;">0.1400059</td>
+<td style="text-align: right;">0.0808574</td>
+<td style="text-align: right;">0.1722132</td>
+<td style="text-align: right;">0.0269303</td>
+<td style="text-align: right;">0.0146701</td>
+<td style="text-align: right;">-0.0273306</td>
+</tr>
+<tr class="odd">
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">85</td>
+<td style="text-align: right;">0.0365730</td>
+<td style="text-align: right;">0.325395</td>
+<td style="text-align: right;">0.578723</td>
+<td style="text-align: right;">0.497059</td>
+<td style="text-align: right;">6.55</td>
+<td style="text-align: right;">0.0019244</td>
+<td style="text-align: right;">2.364896</td>
+<td style="text-align: right;">28.14034</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">20.2187</td>
+<td style="text-align: right;">243.7562</td>
+<td style="text-align: right;">358.7830</td>
+<td style="text-align: right;">206.8827</td>
+<td style="text-align: right;">383.0707</td>
+<td style="text-align: right;">261.0861</td>
+<td style="text-align: right;">298.88</td>
+<td style="text-align: right;">490.43</td>
+<td style="text-align: right;">281.44</td>
+<td style="text-align: right;">288.58</td>
+<td style="text-align: right;">0.0932486</td>
+<td style="text-align: right;">0.0823065</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">-3.308445</td>
+<td style="text-align: right;">-1.122715</td>
+<td style="text-align: right;">-0.5469313</td>
+<td style="text-align: right;">-0.6990466</td>
+<td style="text-align: right;">1.879465</td>
+<td style="text-align: right;">-6.253162</td>
+<td style="text-align: right;">0.8607340</td>
+<td style="text-align: right;">3.337204</td>
+<td style="text-align: right;">5.496169</td>
+<td style="text-align: right;">5.882718</td>
+<td style="text-align: right;">5.332152</td>
+<td style="text-align: right;">5.948220</td>
+<td style="text-align: right;">5.564850</td>
+<td style="text-align: right;">5.700042</td>
+<td style="text-align: right;">6.195283</td>
+<td style="text-align: right;">5.639919</td>
+<td style="text-align: right;">5.664972</td>
+<td style="text-align: right;">-2.372487</td>
+<td style="text-align: right;">-2.497306</td>
+<td style="text-align: right;">3.006608</td>
+<td style="text-align: right;">0.0518246</td>
+<td style="text-align: right;">-0.1080536</td>
+<td style="text-align: right;">-0.0439184</td>
+<td style="text-align: right;">-0.0453200</td>
+<td style="text-align: right;">-0.0506060</td>
+<td style="text-align: right;">0.0201988</td>
+<td style="text-align: right;">0.0472231</td>
+<td style="text-align: right;">0.1721251</td>
+</tr>
+<tr class="even">
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">86</td>
+<td style="text-align: right;">0.0347524</td>
+<td style="text-align: right;">0.326062</td>
+<td style="text-align: right;">0.512324</td>
+<td style="text-align: right;">0.439863</td>
+<td style="text-align: right;">6.90</td>
+<td style="text-align: right;">0.0018952</td>
+<td style="text-align: right;">2.385681</td>
+<td style="text-align: right;">29.74098</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">20.2187</td>
+<td style="text-align: right;">257.9139</td>
+<td style="text-align: right;">369.5465</td>
+<td style="text-align: right;">218.5165</td>
+<td style="text-align: right;">409.8842</td>
+<td style="text-align: right;">269.6129</td>
+<td style="text-align: right;">322.65</td>
+<td style="text-align: right;">478.67</td>
+<td style="text-align: right;">286.91</td>
+<td style="text-align: right;">306.70</td>
+<td style="text-align: right;">0.0973228</td>
+<td style="text-align: right;">0.0800806</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">-3.359507</td>
+<td style="text-align: right;">-1.120668</td>
+<td style="text-align: right;">-0.6687981</td>
+<td style="text-align: right;">-0.8212920</td>
+<td style="text-align: right;">1.931521</td>
+<td style="text-align: right;">-6.268420</td>
+<td style="text-align: right;">0.8694848</td>
+<td style="text-align: right;">3.392526</td>
+<td style="text-align: right;">5.552626</td>
+<td style="text-align: right;">5.912277</td>
+<td style="text-align: right;">5.386862</td>
+<td style="text-align: right;">6.015875</td>
+<td style="text-align: right;">5.596987</td>
+<td style="text-align: right;">5.776568</td>
+<td style="text-align: right;">6.171011</td>
+<td style="text-align: right;">5.659169</td>
+<td style="text-align: right;">5.725870</td>
+<td style="text-align: right;">-2.329722</td>
+<td style="text-align: right;">-2.524721</td>
+<td style="text-align: right;">3.006608</td>
+<td style="text-align: right;">-0.0510616</td>
+<td style="text-align: right;">0.0020478</td>
+<td style="text-align: right;">-0.1218668</td>
+<td style="text-align: right;">-0.1222454</td>
+<td style="text-align: right;">0.0520563</td>
+<td style="text-align: right;">-0.0152583</td>
+<td style="text-align: right;">0.0553219</td>
+<td style="text-align: right;">0.0427649</td>
+</tr>
+</tbody>
+</table>
 </div>
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb4"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a>mincer_2</span></code></pre></div><button title="コピー" class="code-copy-button"><i class="bi"></i></button></div>
-<div class="cell-output cell-output-stdout">
-<pre><code>
-Call:
-lm(formula = wage ~ educ + exper + expersq, data = mroz)
-
-Coefficients:
-(Intercept)         educ        exper      expersq  
-  -2.488019     0.495710     0.036708    -0.000375  </code></pre>
 </div>
+<p>表の縦軸（行）が各観測を示しており、横軸（列）の<code>county</code>, <code>year</code>, <code>crmrte</code>などが変数名である（例えば、1行目はcountyが1の群における1981年の観測結果が並べられている）。</p>
+<p>本データは59個もの変数が存在するため、本章で用いる複数個の変数の意味・定義をかいつまんで紹介しておく。</p>
+<!-- 
+style="margin-left: auto; margin-right: auto; width: 任意;"
+Markdown表を画面中央に寄せる
+-->
+<div style="margin-left: auto; margin-right: auto; width: 70%;">
+<table class="caption-top table">
+<caption>本章で用いる変数の定義</caption>
+<thead>
+<tr class="header">
+<th>変数名</th>
+<th>変数の定義</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><code>crmrte</code></td>
+<td>1人当たりの犯罪件数</td>
+</tr>
+<tr class="even">
+<td><code>taxpc</code></td>
+<td>1人当たりの税収入</td>
+</tr>
+<tr class="odd">
+<td><code>polpc</code></td>
+<td>1人当たりの警察官数</td>
+</tr>
+</tbody>
+</table>
 </div>
 </section>
-<section id="stargazer" class="level3" data-number="1.2">
-<h3 data-number="1.2" class="anchored" data-anchor-id="stargazer"><span class="header-section-number">1.2</span> stargazer</h3>
-<p>始めに紹介するのは<code>stargazer()</code>という関数である。パッケージ{stargazer}に含まれており、非常に見やすい分析結果を出力してくれる。なにより、複数の回帰分析結果を表示できることが<code>summary()</code>とは明確に異なっている。</p>
-<div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb6"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="fu">stargazer</span>(回帰モデル(複数個OK), <span class="at">type =</span> 出力設定, ...)</span></code></pre></div><button title="コピー" class="code-copy-button"><i class="bi"></i></button></div>
-</div>
-<p>回帰モデル(mincer_1など)は必ず示さなければいけない。後ろの<code>type =</code>について、詳細は後で話すが今回は<code>type = "text"</code>と入力する。</p>
-<p>早速<code>stargazer()</code>で先ほどの分析結果を出力してみよう。</p>
-<div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb7"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="co"># stargazerのインストール</span></span>
-<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a><span class="fu">install.packages</span>(<span class="st">"stargazer"</span>)</span></code></pre></div><button title="コピー" class="code-copy-button"><i class="bi"></i></button></div>
-</div>
-<div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb8"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="co"># stargazerの読み込み</span></span>
-<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(stargazer)</span>
-<span id="cb8-3"><a href="#cb8-3" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb8-4"><a href="#cb8-4" aria-hidden="true" tabindex="-1"></a><span class="co"># 先ほどのmincer_1, mincer_2をstargazerで出力する</span></span>
-<span id="cb8-5"><a href="#cb8-5" aria-hidden="true" tabindex="-1"></a><span class="fu">stargazer</span>(mincer_1, mincer_2, <span class="at">type =</span> <span class="st">"text"</span>)</span></code></pre></div><button title="コピー" class="code-copy-button"><i class="bi"></i></button></div>
-<div class="cell-output cell-output-stdout">
-<pre><code>
-===================================================================
-                                  Dependent variable:              
-                    -----------------------------------------------
-                                         wage                      
-                              (1)                     (2)          
--------------------------------------------------------------------
-educ                       0.497***                0.496***        
-                            (0.066)                 (0.066)        
-                                                                   
-exper                        0.025                   0.037         
-                            (0.019)                 (0.062)        
-                                                                   
-expersq                                             -0.0004        
-                                                    (0.002)        
-                                                                   
-Constant                   -2.432***               -2.488***       
-                            (0.885)                 (0.928)        
-                                                                   
--------------------------------------------------------------------
-Observations                  428                     428          
-R2                           0.121                   0.121         
-Adjusted R2                  0.116                   0.114         
-Residual Std. Error    3.112 (df = 425)        3.115 (df = 424)    
-F Statistic         29.130*** (df = 2; 425) 19.390*** (df = 3; 424)
-===================================================================
-Note:                                   *p&lt;0.1; **p&lt;0.05; ***p&lt;0.01</code></pre>
-</div>
-</div>
-<p><code>summary()</code>と比較して、かなり見やすくなった(と思う)。</p>
-<p>表の中身について何点か説明しておく。</p>
+<section id="記述統計量の表示" class="level2" data-number="3">
+<h2 data-number="3" class="anchored" data-anchor-id="記述統計量の表示"><span class="header-section-number">3</span> 記述統計量の表示</h2>
+<section id="そもそも記述統計量とは" class="level3" data-number="3.1">
+<h3 data-number="3.1" class="anchored" data-anchor-id="そもそも記述統計量とは"><span class="header-section-number">3.1</span> そもそも記述統計量とは？</h3>
+<p><strong>記述統計量</strong>とは、データの分布や特徴を要約し、視覚的または数値的に表現するための指標である。実際の計量経済分析に移る前に、<u>利用するデータフレームがどのような形・性質を有しているのかを大まかに示し、その妥当性を読み手に示す役割</u>を持つ。<a href="#fn1" class="footnote-ref" id="fnref1" role="doc-noteref"><sup>1</sup></a> 主に示される記述統計量として、平均値, 標準偏差, 中央値, 最大値, 最小値, 標本観測数（サンプルサイズ）などが論文において表示される。</p>
+</section>
+<section id="計量経済分析を用いたレポートの流れ" class="level3" data-number="3.2">
+<h3 data-number="3.2" class="anchored" data-anchor-id="計量経済分析を用いたレポートの流れ"><span class="header-section-number">3.2</span> 計量経済分析を用いたレポートの流れ</h3>
+<p>記述統計量は論文のどの節で示すべきなのか？多くの経済学の実証論文において、以下の様な記述の流れが大まかに存在し、学部生もこれらに則ることが望ましいと思われる。</p>
+<ol type="1">
+<li>研究テーマの背景・研究目的</li>
+<li>先行研究の紹介・導かれる仮説</li>
+<li>分析方法（分析モデル）・分析に用いるデータの説明</li>
+<li>分析結果の解釈・分析方法の妥当性に関する議論</li>
+<li>結論</li>
+</ol>
+<p>実際の論文では各節がより細分化されており、微妙な流れの違いはあるものの、恐らく皆さんが卒論などで先行研究に触れる際は、上記の様な手順で議論されているだろう。</p>
+<p>本章で取り上げる<strong>記述統計量の表示</strong>は、「3. 分析に用いるデータの説明」の際に示されることが多い。</p>
+</section>
+<section id="記述統計量を表示する関数" class="level3" data-number="3.3">
+<h3 data-number="3.3" class="anchored" data-anchor-id="記述統計量を表示する関数"><span class="header-section-number">3.3</span> 記述統計量を表示する関数</h3>
+<p>いよいよ記述統計量を表示する方法を説明する。記述統計量の表示に有用な関数は沢山あり、本節では以下の関数を紹介する。</p>
 <ul>
-<li>各説明変数(<code>educ</code>, <code>exper</code>, <code>expersq</code>, <code>Constant</code>)の右側にある値が推定された係数値を示している。<a href="#fn1" class="footnote-ref" id="fnref1" role="doc-noteref"><sup>1</sup></a></li>
-<li>推定された係数値の下に括弧で囲まれた値があるが、これは<u>標準誤差</u>を示している。</li>
-<li>表の下側に関して、標本の観測数<code>Observation</code>や決定係数<code>R2</code>が示されている。(それぞれの役割・意味については各自で勉強して欲しい。)</li>
-<li><code>summary()</code>の時と＊の表し方が若干異なっている。
-<ul>
-<li><code>summary()</code>: ＊で5%。＊＊で1%、＊＊＊で0.1%水準で統計的に有意</li>
-<li><code>stargazer()</code>: ＊10%、＊＊で5%、＊＊＊で1%水準で統計的に有意<a href="#fn2" class="footnote-ref" id="fnref2" role="doc-noteref"><sup>2</sup></a></li>
-</ul></li>
+<li><code>summary()</code></li>
+<li><code>psych::describe()</code></li>
+<li><code>modelsummary::datasummary()</code></li>
 </ul>
-<p>先ほど説明を割愛した<code>type =</code>について、この引数は表の出力方法を示すものである。<code>type = "text"</code>はそのままテキストとして出力する設定で、他のタイプとして<code>"latex"</code> (LaTeXという文書作成ソフトで出力するための設定)、<code>"html"</code> (HTMLで出力するための設定)が存在する。<a href="#fn3" class="footnote-ref" id="fnref3" role="doc-noteref"><sup>3</sup></a></p>
+<p>以下のRコードでは、先ほど説明した3つの変数<code>crmrte</code>, <code>taxpc</code>, <code>polpc</code>の記述統計量を表示する。</p>
+<section id="summary" class="level4" data-number="3.3.1">
+<h4 data-number="3.3.1" class="anchored" data-anchor-id="summary"><span class="header-section-number">3.3.1</span> <code>summary()</code></h4>
+<p>Rに内蔵されている関数であり、<code>summary(データフレーム)</code>で、データフレームに含まれる全ての変数に対する記述統計量を表示する。</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb3"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="co"># crime4の中にある、3つの変数(crmrte, taxpc, polpc)の記述統計量を表示</span></span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(crime4[, <span class="fu">c</span>(<span class="st">"crmrte"</span>, <span class="st">"taxpc"</span>, <span class="st">"polpc"</span>)])</span></code></pre></div><button title="コピー" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>     crmrte             taxpc            polpc          
+ Min.   :0.001812   Min.   : 14.30   Min.   :0.0004585  
+ 1st Qu.:0.018352   1st Qu.: 23.43   1st Qu.:0.0011913  
+ Median :0.028441   Median : 27.79   Median :0.0014506  
+ Mean   :0.031588   Mean   : 30.24   Mean   :0.0019168  
+ 3rd Qu.:0.038406   3rd Qu.: 33.27   3rd Qu.:0.0018032  
+ Max.   :0.163835   Max.   :119.76   Max.   :0.0355781  </code></pre>
+</div>
+</div>
+<p>上から最小値 (Min.), 第1四分位数 (1st Qu.), 中央値 (Median), 平均値 (Mean), 第3四分位数 (3rd Qu.), 最大値 (Max.)を示している。<a href="#fn2" class="footnote-ref" id="fnref2" role="doc-noteref"><sup>2</sup></a> 論文で表示する用途としては微妙だが、分析者自身が初めに確認する用途としては有用である。</p>
 </section>
-<section id="modelsummary" class="level3" data-number="1.3">
-<h3 data-number="1.3" class="anchored" data-anchor-id="modelsummary"><span class="header-section-number">1.3</span> modelsummary</h3>
-<p>続いて紹介するのは<code>modelsummary()</code>という関数である。{modelsummary}パッケージに含まれており、ChatGPT曰く<code>modelsummary()</code>&gt;&gt;&gt;<code>stagazer()</code>らしいので、大学院進学などを踏まえている学生にとっては、こちらの方が望ましい関数だと考えられる。</p>
+<section id="psychdescribe" class="level4" data-number="3.3.2">
+<h4 data-number="3.3.2" class="anchored" data-anchor-id="psychdescribe"><span class="header-section-number">3.3.2</span> <code>psych::describe()</code></h4>
+<p><code>describe(データフレーム)</code>は{psych}パッケージに含まれている関数であり、<code>summary()</code>より多くの種類の記述統計量が表示できる。また、<code>summary()</code>は縦軸が記述統計量、横軸が各変数を示していたが、<code>describe()</code>では縦軸が各変数、横軸が記述統計量を表している。</p>
 <div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb10"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a><span class="fu">modelsummary</span>(<span class="at">models =</span> <span class="fu">list</span>(回帰モデル1, 回帰モデル2, ...), ...)</span></code></pre></div><button title="コピー" class="code-copy-button"><i class="bi"></i></button></div>
-</div>
-<p>ここでも同様に、回帰モデルを示すことが最低限必要である。 <code>stargazer()</code>もそうだが、<code>modelsummary()</code>においては<code>models =</code>の他に大量の詳細オプションが存在するため、適宜確認することが望ましい。<a href="#fn4" class="footnote-ref" id="fnref4" role="doc-noteref"><sup>4</sup></a></p>
-<p>早速<code>modelsummary()</code>を用いて結果を表示してみよう！！</p>
-<div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb11"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a><span class="co"># modelsummaryのインストール</span></span>
-<span id="cb11-2"><a href="#cb11-2" aria-hidden="true" tabindex="-1"></a><span class="fu">install.packages</span>(<span class="st">"modelsummary"</span>)</span></code></pre></div><button title="コピー" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb5"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="co"># psychパッケージのインストール・読み込み</span></span>
+<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a><span class="fu">install.packages</span>(<span class="st">"psych"</span>)</span>
+<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(psych)</span></code></pre></div><button title="コピー" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
 <div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb12"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a><span class="co"># modelsummaryの読み込み</span></span>
-<span id="cb12-2"><a href="#cb12-2" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(modelsummary)</span>
-<span id="cb12-3"><a href="#cb12-3" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb12-4"><a href="#cb12-4" aria-hidden="true" tabindex="-1"></a><span class="co"># 結果の出力</span></span>
-<span id="cb12-5"><a href="#cb12-5" aria-hidden="true" tabindex="-1"></a><span class="fu">modelsummary</span>(</span>
-<span id="cb12-6"><a href="#cb12-6" aria-hidden="true" tabindex="-1"></a>  <span class="at">models =</span> <span class="fu">list</span>(mincer_1, mincer_2),</span>
-<span id="cb12-7"><a href="#cb12-7" aria-hidden="true" tabindex="-1"></a>  <span class="at">stars =</span> <span class="fu">c</span>(<span class="st">'*'</span> <span class="ot">=</span> .<span class="dv">1</span>, <span class="st">'**'</span> <span class="ot">=</span> .<span class="dv">05</span>, <span class="st">'***'</span> <span class="ot">=</span> .<span class="dv">01</span>), <span class="co"># ＊の基準を設定して表示する</span></span>
-<span id="cb12-8"><a href="#cb12-8" aria-hidden="true" tabindex="-1"></a>  <span class="at">fmt =</span> <span class="dv">4</span>, <span class="co"># 結果の小数点をどこまで記述するかを指定</span></span>
-<span id="cb12-9"><a href="#cb12-9" aria-hidden="true" tabindex="-1"></a>  <span class="at">gof_omit =</span> <span class="st">'RMSE|AIC|BIC|Log.Lik.'</span>) <span class="co"># 増長な統計量を表から取り除く</span></span></code></pre></div><button title="コピー" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb6"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="co"># 記述統計量の表示</span></span>
+<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a><span class="fu">describe</span>(crime4[, <span class="fu">c</span>(<span class="st">"crmrte"</span>, <span class="st">"taxpc"</span>, <span class="st">"polpc"</span>)], </span>
+<span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a>         <span class="co"># 記述統計量の数を制限</span></span>
+<span id="cb6-4"><a href="#cb6-4" aria-hidden="true" tabindex="-1"></a>         <span class="at">skew =</span> <span class="cn">FALSE</span>)</span></code></pre></div><button title="コピー" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>       vars   n  mean    sd median  min    max  range   se
+crmrte    1 630  0.03  0.02   0.03  0.0   0.16   0.16 0.00
+taxpc     2 630 30.24 11.45  27.79 14.3 119.76 105.46 0.46
+polpc     3 630  0.00  0.00   0.00  0.0   0.04   0.04 0.00</code></pre>
+</div>
+</div>
+<p>左から、標本観測数 (n), 平均値 (mean), 標準偏差 (sd), 中央値 (median), 最小値 (min), 最大値 (max), 範囲 (range), 標準誤差 (se)が表示されている。<code>skew = FALSE</code>というオプションは、統計量の数を制限するためのもので、このオプションがない場合、歪度 (skewness)や尖度 (kurtosis)などといった比較的マニアックな統計量も表示される。</p>
+</section>
+<section id="modelsummarydatasummary" class="level4" data-number="3.3.3">
+<h4 data-number="3.3.3" class="anchored" data-anchor-id="modelsummarydatasummary"><span class="header-section-number">3.3.3</span> <code>modelsummary::datasummary()</code></h4>
+<p><code>datasummary(データフレーム)</code>は{modelsummary}パッケージに含まれる関数で、恐らく論文に表示する用途として最も便利な関数であると思われる。以下が基本的な利用方法である。</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb8"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="fu">datasummary</span>(変数名1 <span class="sc">+</span> 変数名2 <span class="sc">+</span> <span class="fu">...</span>(行を指定) <span class="sc">~</span> 統計量1 <span class="sc">+</span> 統計量2 <span class="sc">+</span> <span class="fu">...</span>(列を指定),</span>
+<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a>            <span class="at">data =</span> データフレーム, <span class="at">fmt =</span> 小数点の桁数を指定,</span>
+<span id="cb8-3"><a href="#cb8-3" aria-hidden="true" tabindex="-1"></a>            <span class="at">title =</span> 表のタイトル, <span class="at">notes =</span> 表の脚注)</span></code></pre></div><button title="コピー" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+<p>先ほどの<code>summary()</code>, <code>describe()</code>とは違い、記述統計量と変数の指定方法が<code>変数名1 + 変数名2 + ...(行を指定) ~ 統計量1 + 統計量2 + ...(列を指定)</code>という形式である。 <code>fmt =</code>や<code>title =</code>といったオプションはなくても実行されるが、論文に載せる際はこれらのディテールにも拘るべきだろう。</p>
+<p>実際に<code>crime4</code>のデータから記述統計量を表示してみる。</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb9"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a><span class="co"># modelsummaryパッケージのインストール・読み込み</span></span>
+<span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a><span class="fu">install.packages</span>(<span class="st">"modelsummary"</span>)</span>
+<span id="cb9-3"><a href="#cb9-3" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(modelsummary)</span></code></pre></div><button title="コピー" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb10"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a><span class="co"># 記述統計量の表示</span></span>
+<span id="cb10-2"><a href="#cb10-2" aria-hidden="true" tabindex="-1"></a><span class="fu">datasummary</span>(crmrte <span class="sc">+</span> taxpc <span class="sc">+</span> polpc <span class="sc">~</span> N <span class="sc">+</span> Mean <span class="sc">+</span> SD <span class="sc">+</span> Min <span class="sc">+</span> Median <span class="sc">+</span> Max,</span>
+<span id="cb10-3"><a href="#cb10-3" aria-hidden="true" tabindex="-1"></a>            <span class="at">data =</span> crime4, <span class="at">fmt =</span> <span class="dv">3</span>, <span class="co"># 小数点3桁まで表示(4桁目を四捨五入)</span></span>
+<span id="cb10-4"><a href="#cb10-4" aria-hidden="true" tabindex="-1"></a>            <span class="at">title =</span> <span class="st">"ここがタイトル"</span>, <span class="at">notes =</span> <span class="st">"ここが脚注"</span>)</span></code></pre></div><button title="コピー" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output-display">
 <!-- preamble start -->
 
@@ -294,25 +772,23 @@ Note:                                   *p&lt;0.1; **p&lt;0.05; ***p&lt;0.01</co
 
     <script>
       // Create table-specific functions using external factory
-      const tableFns_6pjn207lrraobrcqi2uq = TinyTable.createTableFunctions("tinytable_6pjn207lrraobrcqi2uq");
+      const tableFns_axalog7dl1x71w7ac6ig = TinyTable.createTableFunctions("tinytable_axalog7dl1x71w7ac6ig");
       // tinytable span after
       window.addEventListener('load', function () {
           var cellsToStyle = [
             // tinytable style arrays after
-          { positions: [ { i: '12', j: 2 }, { i: '12', j: 3 } ], css_id: 'tinytable_css_amw8in0pqtskfzpgtdk2',}, 
-          { positions: [ { i: '8', j: 2 }, { i: '8', j: 3 } ], css_id: 'tinytable_css_bm0j48on14tu2an0epc5',}, 
-          { positions: [ { i: '1', j: 2 }, { i: '2', j: 2 }, { i: '3', j: 2 }, { i: '4', j: 2 }, { i: '5', j: 2 }, { i: '6', j: 2 }, { i: '7', j: 2 }, { i: '9', j: 2 }, { i: '10', j: 2 }, { i: '11', j: 2 }, { i: '1', j: 3 }, { i: '2', j: 3 }, { i: '3', j: 3 }, { i: '4', j: 3 }, { i: '5', j: 3 }, { i: '6', j: 3 }, { i: '7', j: 3 }, { i: '9', j: 3 }, { i: '10', j: 3 }, { i: '11', j: 3 } ], css_id: 'tinytable_css_np3el5in814slb8hvqoc',}, 
-          { positions: [ { i: '0', j: 2 }, { i: '0', j: 3 } ], css_id: 'tinytable_css_r17al86d6jedawknbwnn',}, 
-          { positions: [ { i: '12', j: 1 } ], css_id: 'tinytable_css_dxw960relft0ce6rnhak',}, 
-          { positions: [ { i: '8', j: 1 } ], css_id: 'tinytable_css_5xwzvbh2tgcpsk470v7x',}, 
-          { positions: [ { i: '1', j: 1 }, { i: '2', j: 1 }, { i: '3', j: 1 }, { i: '4', j: 1 }, { i: '5', j: 1 }, { i: '6', j: 1 }, { i: '7', j: 1 }, { i: '9', j: 1 }, { i: '10', j: 1 }, { i: '11', j: 1 } ], css_id: 'tinytable_css_2bg159dd9xbj357lo3w9',}, 
-          { positions: [ { i: '0', j: 1 } ], css_id: 'tinytable_css_zcj5tax8nsednmzxn57l',}, 
+          { positions: [ { i: '3', j: 2 }, { i: '3', j: 3 }, { i: '3', j: 4 }, { i: '3', j: 5 }, { i: '3', j: 6 }, { i: '3', j: 7 } ], css_id: 'tinytable_css_juqaqc3qmhzmmmodcczh',}, 
+          { positions: [ { i: '1', j: 2 }, { i: '2', j: 2 }, { i: '1', j: 3 }, { i: '2', j: 3 }, { i: '1', j: 4 }, { i: '2', j: 4 }, { i: '1', j: 5 }, { i: '2', j: 5 }, { i: '1', j: 6 }, { i: '2', j: 6 }, { i: '1', j: 7 }, { i: '2', j: 7 } ], css_id: 'tinytable_css_giuaw1j43rflc6nasxfp',}, 
+          { positions: [ { i: '0', j: 2 }, { i: '0', j: 3 }, { i: '0', j: 4 }, { i: '0', j: 5 }, { i: '0', j: 6 }, { i: '0', j: 7 } ], css_id: 'tinytable_css_10nkd4bo7qqvjwhh0wnl',}, 
+          { positions: [ { i: '3', j: 1 } ], css_id: 'tinytable_css_wuvlu0evmjrzlgzzb5bu',}, 
+          { positions: [ { i: '1', j: 1 }, { i: '2', j: 1 } ], css_id: 'tinytable_css_hlj9nn4kcgfz1hl3tme4',}, 
+          { positions: [ { i: '0', j: 1 } ], css_id: 'tinytable_css_soltr4jxnvrj4hvymtns',}, 
           ];
 
           // Loop over the arrays to style the cells
           cellsToStyle.forEach(function (group) {
               group.positions.forEach(function (cell) {
-                  tableFns_6pjn207lrraobrcqi2uq.styleCell(cell.i, cell.j, group.css_id);
+                  tableFns_axalog7dl1x71w7ac6ig.styleCell(cell.i, cell.j, group.css_id);
               });
           });
       });
@@ -321,86 +797,55 @@ Note:                                   *p&lt;0.1; **p&lt;0.05; ***p&lt;0.01</co
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/vincentarelbundock/tinytable@main/inst/tinytable.css">
     <style>
     /* tinytable css entries after */
-    #tinytable_6pjn207lrraobrcqi2uq td.tinytable_css_amw8in0pqtskfzpgtdk2, #tinytable_6pjn207lrraobrcqi2uq th.tinytable_css_amw8in0pqtskfzpgtdk2 {  position: relative; --border-bottom: 1; --border-left: 0; --border-right: 0; --border-top: 0; --line-color-bottom: var(--tt-line-color); --line-color-left: var(--tt-line-color); --line-color-right: var(--tt-line-color); --line-color-top: var(--tt-line-color); --line-width-bottom: 0.08em; --line-width-left: 0.1em; --line-width-right: 0.1em; --line-width-top: 0.1em; --trim-bottom-left: 0%; --trim-bottom-right: 0%; --trim-left-bottom: 0%; --trim-left-top: 0%; --trim-right-bottom: 0%; --trim-right-top: 0%; --trim-top-left: 0%; --trim-top-right: 0%; ; text-align: center }
-    #tinytable_6pjn207lrraobrcqi2uq td.tinytable_css_bm0j48on14tu2an0epc5, #tinytable_6pjn207lrraobrcqi2uq th.tinytable_css_bm0j48on14tu2an0epc5 {  position: relative; --border-bottom: 1; --border-left: 0; --border-right: 0; --border-top: 0; --line-color-bottom: var(--tt-line-color); --line-color-left: var(--tt-line-color); --line-color-right: var(--tt-line-color); --line-color-top: var(--tt-line-color); --line-width-bottom: 0.05em; --line-width-left: 0.1em; --line-width-right: 0.1em; --line-width-top: 0.1em; --trim-bottom-left: 0%; --trim-bottom-right: 0%; --trim-left-bottom: 0%; --trim-left-top: 0%; --trim-right-bottom: 0%; --trim-right-top: 0%; --trim-top-left: 0%; --trim-top-right: 0%; ; text-align: center }
-    #tinytable_6pjn207lrraobrcqi2uq td.tinytable_css_np3el5in814slb8hvqoc, #tinytable_6pjn207lrraobrcqi2uq th.tinytable_css_np3el5in814slb8hvqoc { text-align: center }
-    #tinytable_6pjn207lrraobrcqi2uq td.tinytable_css_r17al86d6jedawknbwnn, #tinytable_6pjn207lrraobrcqi2uq th.tinytable_css_r17al86d6jedawknbwnn {  position: relative; --border-bottom: 1; --border-left: 0; --border-right: 0; --border-top: 1; --line-color-bottom: var(--tt-line-color); --line-color-left: var(--tt-line-color); --line-color-right: var(--tt-line-color); --line-color-top: var(--tt-line-color); --line-width-bottom: 0.05em; --line-width-left: 0.1em; --line-width-right: 0.1em; --line-width-top: 0.08em; --trim-bottom-left: 0%; --trim-bottom-right: 0%; --trim-left-bottom: 0%; --trim-left-top: 0%; --trim-right-bottom: 0%; --trim-right-top: 0%; --trim-top-left: 0%; --trim-top-right: 0%; ; text-align: center }
-    #tinytable_6pjn207lrraobrcqi2uq td.tinytable_css_dxw960relft0ce6rnhak, #tinytable_6pjn207lrraobrcqi2uq th.tinytable_css_dxw960relft0ce6rnhak {  position: relative; --border-bottom: 1; --border-left: 0; --border-right: 0; --border-top: 0; --line-color-bottom: var(--tt-line-color); --line-color-left: var(--tt-line-color); --line-color-right: var(--tt-line-color); --line-color-top: var(--tt-line-color); --line-width-bottom: 0.08em; --line-width-left: 0.1em; --line-width-right: 0.1em; --line-width-top: 0.1em; --trim-bottom-left: 0%; --trim-bottom-right: 0%; --trim-left-bottom: 0%; --trim-left-top: 0%; --trim-right-bottom: 0%; --trim-right-top: 0%; --trim-top-left: 0%; --trim-top-right: 0%; ; text-align: left }
-    #tinytable_6pjn207lrraobrcqi2uq td.tinytable_css_5xwzvbh2tgcpsk470v7x, #tinytable_6pjn207lrraobrcqi2uq th.tinytable_css_5xwzvbh2tgcpsk470v7x {  position: relative; --border-bottom: 1; --border-left: 0; --border-right: 0; --border-top: 0; --line-color-bottom: var(--tt-line-color); --line-color-left: var(--tt-line-color); --line-color-right: var(--tt-line-color); --line-color-top: var(--tt-line-color); --line-width-bottom: 0.05em; --line-width-left: 0.1em; --line-width-right: 0.1em; --line-width-top: 0.1em; --trim-bottom-left: 0%; --trim-bottom-right: 0%; --trim-left-bottom: 0%; --trim-left-top: 0%; --trim-right-bottom: 0%; --trim-right-top: 0%; --trim-top-left: 0%; --trim-top-right: 0%; ; text-align: left }
-    #tinytable_6pjn207lrraobrcqi2uq td.tinytable_css_2bg159dd9xbj357lo3w9, #tinytable_6pjn207lrraobrcqi2uq th.tinytable_css_2bg159dd9xbj357lo3w9 { text-align: left }
-    #tinytable_6pjn207lrraobrcqi2uq td.tinytable_css_zcj5tax8nsednmzxn57l, #tinytable_6pjn207lrraobrcqi2uq th.tinytable_css_zcj5tax8nsednmzxn57l {  position: relative; --border-bottom: 1; --border-left: 0; --border-right: 0; --border-top: 1; --line-color-bottom: var(--tt-line-color); --line-color-left: var(--tt-line-color); --line-color-right: var(--tt-line-color); --line-color-top: var(--tt-line-color); --line-width-bottom: 0.05em; --line-width-left: 0.1em; --line-width-right: 0.1em; --line-width-top: 0.08em; --trim-bottom-left: 0%; --trim-bottom-right: 0%; --trim-left-bottom: 0%; --trim-left-top: 0%; --trim-right-bottom: 0%; --trim-right-top: 0%; --trim-top-left: 0%; --trim-top-right: 0%; ; text-align: left }
+    #tinytable_axalog7dl1x71w7ac6ig td.tinytable_css_juqaqc3qmhzmmmodcczh, #tinytable_axalog7dl1x71w7ac6ig th.tinytable_css_juqaqc3qmhzmmmodcczh {  position: relative; --border-bottom: 1; --border-left: 0; --border-right: 0; --border-top: 0; --line-color-bottom: var(--tt-line-color); --line-color-left: var(--tt-line-color); --line-color-right: var(--tt-line-color); --line-color-top: var(--tt-line-color); --line-width-bottom: 0.08em; --line-width-left: 0.1em; --line-width-right: 0.1em; --line-width-top: 0.1em; --trim-bottom-left: 0%; --trim-bottom-right: 0%; --trim-left-bottom: 0%; --trim-left-top: 0%; --trim-right-bottom: 0%; --trim-right-top: 0%; --trim-top-left: 0%; --trim-top-right: 0%; ; text-align: right }
+    #tinytable_axalog7dl1x71w7ac6ig td.tinytable_css_giuaw1j43rflc6nasxfp, #tinytable_axalog7dl1x71w7ac6ig th.tinytable_css_giuaw1j43rflc6nasxfp { text-align: right }
+    #tinytable_axalog7dl1x71w7ac6ig td.tinytable_css_10nkd4bo7qqvjwhh0wnl, #tinytable_axalog7dl1x71w7ac6ig th.tinytable_css_10nkd4bo7qqvjwhh0wnl {  position: relative; --border-bottom: 1; --border-left: 0; --border-right: 0; --border-top: 1; --line-color-bottom: var(--tt-line-color); --line-color-left: var(--tt-line-color); --line-color-right: var(--tt-line-color); --line-color-top: var(--tt-line-color); --line-width-bottom: 0.05em; --line-width-left: 0.1em; --line-width-right: 0.1em; --line-width-top: 0.08em; --trim-bottom-left: 0%; --trim-bottom-right: 0%; --trim-left-bottom: 0%; --trim-left-top: 0%; --trim-right-bottom: 0%; --trim-right-top: 0%; --trim-top-left: 0%; --trim-top-right: 0%; ; text-align: right }
+    #tinytable_axalog7dl1x71w7ac6ig td.tinytable_css_wuvlu0evmjrzlgzzb5bu, #tinytable_axalog7dl1x71w7ac6ig th.tinytable_css_wuvlu0evmjrzlgzzb5bu {  position: relative; --border-bottom: 1; --border-left: 0; --border-right: 0; --border-top: 0; --line-color-bottom: var(--tt-line-color); --line-color-left: var(--tt-line-color); --line-color-right: var(--tt-line-color); --line-color-top: var(--tt-line-color); --line-width-bottom: 0.08em; --line-width-left: 0.1em; --line-width-right: 0.1em; --line-width-top: 0.1em; --trim-bottom-left: 0%; --trim-bottom-right: 0%; --trim-left-bottom: 0%; --trim-left-top: 0%; --trim-right-bottom: 0%; --trim-right-top: 0%; --trim-top-left: 0%; --trim-top-right: 0%; ; text-align: left }
+    #tinytable_axalog7dl1x71w7ac6ig td.tinytable_css_hlj9nn4kcgfz1hl3tme4, #tinytable_axalog7dl1x71w7ac6ig th.tinytable_css_hlj9nn4kcgfz1hl3tme4 { text-align: left }
+    #tinytable_axalog7dl1x71w7ac6ig td.tinytable_css_soltr4jxnvrj4hvymtns, #tinytable_axalog7dl1x71w7ac6ig th.tinytable_css_soltr4jxnvrj4hvymtns {  position: relative; --border-bottom: 1; --border-left: 0; --border-right: 0; --border-top: 1; --line-color-bottom: var(--tt-line-color); --line-color-left: var(--tt-line-color); --line-color-right: var(--tt-line-color); --line-color-top: var(--tt-line-color); --line-width-bottom: 0.05em; --line-width-left: 0.1em; --line-width-right: 0.1em; --line-width-top: 0.08em; --trim-bottom-left: 0%; --trim-bottom-right: 0%; --trim-left-bottom: 0%; --trim-left-top: 0%; --trim-right-bottom: 0%; --trim-right-top: 0%; --trim-top-left: 0%; --trim-top-right: 0%; ; text-align: left }
     </style>
     <div class="container">
-      <table class="tinytable" id="tinytable_6pjn207lrraobrcqi2uq" style="width: auto; margin-left: auto; margin-right: auto;" data-quarto-disable-processing="true">
-        
+      <table class="tinytable" id="tinytable_axalog7dl1x71w7ac6ig" style="width: auto; margin-left: auto; margin-right: auto;" data-quarto-disable-processing="true">
+        <caption>ここがタイトル</caption>
         <thead>
               <tr>
                 <th scope="col" data-row="0" data-col="1"> </th>
-                <th scope="col" data-row="0" data-col="2">(1)</th>
-                <th scope="col" data-row="0" data-col="3">(2)</th>
+                <th scope="col" data-row="0" data-col="2">N</th>
+                <th scope="col" data-row="0" data-col="3">Mean</th>
+                <th scope="col" data-row="0" data-col="4">SD</th>
+                <th scope="col" data-row="0" data-col="5">Min</th>
+                <th scope="col" data-row="0" data-col="6">Median</th>
+                <th scope="col" data-row="0" data-col="7">Max</th>
               </tr>
         </thead>
-        <tfoot><tr><td colspan="3">* p &lt; 0.1, ** p &lt; 0.05, *** p &lt; 0.01</td></tr></tfoot>
+        <tfoot><tr><td colspan="7">ここが脚注</td></tr></tfoot>
         <tbody>
                 <tr>
-                  <td data-row="1" data-col="1">(Intercept)</td>
-                  <td data-row="1" data-col="2">-2.4317***</td>
-                  <td data-row="1" data-col="3">-2.4880***</td>
+                  <td data-row="1" data-col="1">crmrte</td>
+                  <td data-row="1" data-col="2">630</td>
+                  <td data-row="1" data-col="3">0.032</td>
+                  <td data-row="1" data-col="4">0.018</td>
+                  <td data-row="1" data-col="5">0.002</td>
+                  <td data-row="1" data-col="6">0.028</td>
+                  <td data-row="1" data-col="7">0.164</td>
                 </tr>
                 <tr>
-                  <td data-row="2" data-col="1"></td>
-                  <td data-row="2" data-col="2">(0.8855)</td>
-                  <td data-row="2" data-col="3">(0.9285)</td>
+                  <td data-row="2" data-col="1">taxpc</td>
+                  <td data-row="2" data-col="2">630</td>
+                  <td data-row="2" data-col="3">30.239</td>
+                  <td data-row="2" data-col="4">11.455</td>
+                  <td data-row="2" data-col="5">14.303</td>
+                  <td data-row="2" data-col="6">27.792</td>
+                  <td data-row="2" data-col="7">119.761</td>
                 </tr>
                 <tr>
-                  <td data-row="3" data-col="1">educ</td>
-                  <td data-row="3" data-col="2">0.4966***</td>
-                  <td data-row="3" data-col="3">0.4957***</td>
-                </tr>
-                <tr>
-                  <td data-row="4" data-col="1"></td>
-                  <td data-row="4" data-col="2">(0.0659)</td>
-                  <td data-row="4" data-col="3">(0.0661)</td>
-                </tr>
-                <tr>
-                  <td data-row="5" data-col="1">exper</td>
-                  <td data-row="5" data-col="2">0.0247</td>
-                  <td data-row="5" data-col="3">0.0367</td>
-                </tr>
-                <tr>
-                  <td data-row="6" data-col="1"></td>
-                  <td data-row="6" data-col="2">(0.0187)</td>
-                  <td data-row="6" data-col="3">(0.0616)</td>
-                </tr>
-                <tr>
-                  <td data-row="7" data-col="1">expersq</td>
-                  <td data-row="7" data-col="2"></td>
-                  <td data-row="7" data-col="3">-0.0004</td>
-                </tr>
-                <tr>
-                  <td data-row="8" data-col="1"></td>
-                  <td data-row="8" data-col="2"></td>
-                  <td data-row="8" data-col="3">(0.0018)</td>
-                </tr>
-                <tr>
-                  <td data-row="9" data-col="1">Num.Obs.</td>
-                  <td data-row="9" data-col="2">428</td>
-                  <td data-row="9" data-col="3">428</td>
-                </tr>
-                <tr>
-                  <td data-row="10" data-col="1">R2</td>
-                  <td data-row="10" data-col="2">0.121</td>
-                  <td data-row="10" data-col="3">0.121</td>
-                </tr>
-                <tr>
-                  <td data-row="11" data-col="1">R2 Adj.</td>
-                  <td data-row="11" data-col="2">0.116</td>
-                  <td data-row="11" data-col="3">0.114</td>
-                </tr>
-                <tr>
-                  <td data-row="12" data-col="1">F</td>
-                  <td data-row="12" data-col="2">29.130</td>
-                  <td data-row="12" data-col="3">19.390</td>
+                  <td data-row="3" data-col="1">polpc</td>
+                  <td data-row="3" data-col="2">630</td>
+                  <td data-row="3" data-col="3">0.002</td>
+                  <td data-row="3" data-col="4">0.003</td>
+                  <td data-row="3" data-col="5">0.000</td>
+                  <td data-row="3" data-col="6">0.001</td>
+                  <td data-row="3" data-col="7">0.036</td>
                 </tr>
         </tbody>
       </table>
@@ -408,26 +853,58 @@ Note:                                   *p&lt;0.1; **p&lt;0.05; ***p&lt;0.01</co
 <!-- hack to avoid NA insertion in last line -->
 </div>
 </div>
-<p><code>stargazer()</code>とほぼ同じ形の分析結果が出力された。括弧内の値や＊の定義なども先ほどの<code>stargazer()</code>による出力結果と合致しているため、適宜確認して欲しい。</p>
+<p>記述統計量がかなり綺麗な形式で表示されている。<a href="#fn3" class="footnote-ref" id="fnref3" role="doc-noteref"><sup>3</sup></a> <code>datasummary()</code>の最大の利点は、<u>拡張性・機能性の高さと、多様な出力形式に対応している点</u>である。上記で説明したオプションの他にも数多くのディテール調整が可能であるため、興味がある方は<a href="https://modelsummary.com/vignettes/datasummary.html" target="_blank">modelsummary: Data and Model Summaries in R　Data Summaries</a>を参照されたい。</p>
 </section>
-<section id="レポートなどに記載する方法" class="level3" data-number="1.4">
-<h3 data-number="1.4" class="anchored" data-anchor-id="レポートなどに記載する方法"><span class="header-section-number">1.4</span> レポートなどに記載する方法</h3>
-<p>ここまでの説明で分析結果を見やすくする方法は理解できたと思う。では実際にWordやLaTeX等の文書作成ソフトに載せる方法を簡単に説明しよう。</p>
-<section id="stargazerでの記載方法" class="level4" data-number="1.4.1">
-<h4 data-number="1.4.1" class="anchored" data-anchor-id="stargazerでの記載方法"><span class="header-section-number">1.4.1</span> stargazerでの記載方法</h4>
-<p>先述のように<code>stargazer()</code>では<code>"text", "latex", "html"</code>で出力設定を指定可能であり<code>type =</code>の欄に上記のどれかを記入する。</p>
-<p><strong>Wordでレポートを書く</strong>場合、<code>type = "text"</code>でR Studio上に分析結果を表示し、それをコピー＆ペーストするのが良いだろう。結果として以下の画像のようになり、pdf化すれば何も問題はない。<a href="#fn5" class="footnote-ref" id="fnref5" role="doc-noteref"><sup>5</sup></a></p>
-<div class="quarto-figure quarto-figure-center">
-<figure class="figure">
-<p><img src="mincer_result_word.png" class="img-fluid quarto-figure quarto-figure-center figure-img" style="width:70.0%"></p>
-</figure>
+</section>
+<section id="記述統計量を別のファイル形式で書き出す" class="level3" data-number="3.4">
+<h3 data-number="3.4" class="anchored" data-anchor-id="記述統計量を別のファイル形式で書き出す"><span class="header-section-number">3.4</span> 記述統計量を別のファイル形式で書き出す</h3>
+<p>記述統計量を論文に記載する場合、R上で出力した記述統計表を別のファイル形式に変換して書き出す必要がある。書き出す方法は(1)<code>summary()</code>, <code>describe()</code>向けと、(2)<code>datasummary()</code>向けで異なるため、それぞれでの書き出し方法を説明する。</p>
+<section id="readrwrite_csv" class="level4" data-number="3.4.1">
+<h4 data-number="3.4.1" class="anchored" data-anchor-id="readrwrite_csv"><span class="header-section-number">3.4.1</span> (1) <code>readr::write_csv()</code></h4>
+<p>非常に単純な方法として、Rで記述統計量を表示 → csvファイルに変換 → wordなどに貼り付ける、という手順が挙げられる。記述統計量などのデータフレームをcsvファイルに変換する際に使われるのが、{readr}パッケージに含まれる<code>write_csv()</code>関数である。</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb11"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a><span class="fu">write_csv</span>(データフレーム, </span>
+<span id="cb11-2"><a href="#cb11-2" aria-hidden="true" tabindex="-1"></a>          <span class="st">"C:/Users/...(保存先のファイルのパス).../記述統計表のファイル名.csv"</span>)</span></code></pre></div><button title="コピー" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
-<p><strong>LaTeXでレポートを書く</strong>場合も同様で、<code>type = "latex"</code>と記入し、出力される文字コードをLaTeXにコピー＆ペーストすれば上記の画像と同様の表が得られる。</p>
-<p>最後に<code>stargazer()</code>について述べるべきこととして、<code>stargazer()</code>は<strong>LaTeXを用いない人には使い勝手がそこまで良くない</strong>と言う点は重要だ。可能な出力形式が限定的で、csvやpngなどで結果を返してくれない点は気になる。</p>
+<p>実際の例として、<code>crime4</code>の<code>crmrte</code>, <code>taxpc</code>, <code>polpc</code>に関する記述統計表を、パソコン内のoutputというファイル内に、des.csvという名前で書き出してみる（皆さんが実践する際は、ファイルのパスを各自が保存したいファイル先に指定する）。</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb12"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a><span class="co"># readrパッケージの読み込み(前回の章でインストール済み)</span></span>
+<span id="cb12-2"><a href="#cb12-2" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(readr)</span>
+<span id="cb12-3"><a href="#cb12-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb12-4"><a href="#cb12-4" aria-hidden="true" tabindex="-1"></a><span class="co"># describe()で作成した記述統計表を、desという名前のオブジェクトに代入する</span></span>
+<span id="cb12-5"><a href="#cb12-5" aria-hidden="true" tabindex="-1"></a>des <span class="ot">&lt;-</span> <span class="fu">describe</span>(crime4[, <span class="fu">c</span>(<span class="st">"crmrte"</span>, <span class="st">"taxpc"</span>, <span class="st">"polpc"</span>)], <span class="at">skew =</span> <span class="cn">FALSE</span>)</span>
+<span id="cb12-6"><a href="#cb12-6" aria-hidden="true" tabindex="-1"></a><span class="co"># 代入した記述統計表をwrite_csv()で書き出す</span></span>
+<span id="cb12-7"><a href="#cb12-7" aria-hidden="true" tabindex="-1"></a><span class="fu">write_csv</span>(</span>
+<span id="cb12-8"><a href="#cb12-8" aria-hidden="true" tabindex="-1"></a>  <span class="co"># オブジェクト名</span></span>
+<span id="cb12-9"><a href="#cb12-9" aria-hidden="true" tabindex="-1"></a>  des, </span>
+<span id="cb12-10"><a href="#cb12-10" aria-hidden="true" tabindex="-1"></a>  <span class="co"># ファイルのパス指定 + 記述統計表のファイル名を決めて入力</span></span>
+<span id="cb12-11"><a href="#cb12-11" aria-hidden="true" tabindex="-1"></a>  <span class="st">"C:/Users/narita yoshiyuki/Desktop/相澤ゼミ_資料/TA/Aizawa_seminar_TA/R_Studio_lec/output/des.csv"</span>)</span></code></pre></div><button title="コピー" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+<p>そうすると、皆さんが各自指定したファイル内に記述統計量のcsvファイルが保存される。</p>
 </section>
-<section id="modelsummaryでの記載方法" class="level4" data-number="1.4.2">
-<h4 data-number="1.4.2" class="anchored" data-anchor-id="modelsummaryでの記載方法"><span class="header-section-number">1.4.2</span> modelsummaryでの記載方法</h4>
-<p><code>stargazer()</code>とは異なり、<code>modelsummary()</code>は極めて多くの出力形式に対応している。<code>?modelsummary</code>と打った際に出てくるhelpにおいて、この関数が対応している拡張子は.docx, .html, .tex, .md, .txt, .csv, .xlsx, .png, .jpg とされている。</p>
+<section id="オプションのoutput-を用いる" class="level4" data-number="3.4.2">
+<h4 data-number="3.4.2" class="anchored" data-anchor-id="オプションのoutput-を用いる"><span class="header-section-number">3.4.2</span> (2) オプションの<code>output =</code>を用いる</h4>
+<p>正直な話、(1)の方法を採用するよりも、素直に<code>datasummary()</code>を使った方が簡単である。<code>datasummary()</code>内のオプションである<code>output = "C:/Users/...(ファイルのパス).../記述統計表のファイル名.拡張子"</code>を用いることで、<code>datasummary()</code>の関数のみで記述統計表の作成・編集・書き出しを一気通貫で行なうことが出来る。</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb13"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a><span class="co"># 記述統計表を作成し、datasummary.csvというファイル名で保存する</span></span>
+<span id="cb13-2"><a href="#cb13-2" aria-hidden="true" tabindex="-1"></a><span class="fu">datasummary</span>(crmrte <span class="sc">+</span> taxpc <span class="sc">+</span> polpc <span class="sc">~</span> N <span class="sc">+</span> Mean <span class="sc">+</span> SD <span class="sc">+</span> Min <span class="sc">+</span> Median <span class="sc">+</span> Max,</span>
+<span id="cb13-3"><a href="#cb13-3" aria-hidden="true" tabindex="-1"></a>            <span class="at">data =</span> crime4, <span class="at">fmt =</span> <span class="dv">3</span>,</span>
+<span id="cb13-4"><a href="#cb13-4" aria-hidden="true" tabindex="-1"></a>            <span class="co"># ファイルのパス指定 + 記述統計表のファイル名を決めて入力</span></span>
+<span id="cb13-5"><a href="#cb13-5" aria-hidden="true" tabindex="-1"></a>            <span class="at">output =</span> <span class="st">"C:/Users/narita yoshiyuki/Desktop/相澤ゼミ_資料/TA/Aizawa_seminar_TA/R_Studio_lec/output/datasummary.csv"</span>)</span></code></pre></div><button title="コピー" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+<p><code>datasummary()</code>の更なる利点として、<u>csvのみならずpngやdocxなどの幅広いファイル形式への書き出しが可能であるという点</u>がある。<a href="#fn4" class="footnote-ref" id="fnref4" role="doc-noteref"><sup>4</sup></a></p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb14"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a><span class="co"># pngファイルで記述統計量を書き出す</span></span>
+<span id="cb14-2"><a href="#cb14-2" aria-hidden="true" tabindex="-1"></a><span class="fu">datasummary</span>(crmrte <span class="sc">+</span> taxpc <span class="sc">+</span> polpc <span class="sc">~</span> N <span class="sc">+</span> Mean <span class="sc">+</span> SD <span class="sc">+</span> Min <span class="sc">+</span> Median <span class="sc">+</span> Max,</span>
+<span id="cb14-3"><a href="#cb14-3" aria-hidden="true" tabindex="-1"></a>            <span class="at">data =</span> crime4, <span class="at">fmt =</span> <span class="dv">3</span>, <span class="at">title =</span> <span class="st">"PNG画像で保存"</span>,</span>
+<span id="cb14-4"><a href="#cb14-4" aria-hidden="true" tabindex="-1"></a>            <span class="at">output =</span> <span class="st">"C:/Users/narita yoshiyuki/Desktop/相澤ゼミ_資料/TA/Aizawa_seminar_TA/R_Studio_lec/output/datasummary.png"</span>)</span>
+<span id="cb14-5"><a href="#cb14-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb14-6"><a href="#cb14-6" aria-hidden="true" tabindex="-1"></a><span class="co"># htmlファイルで記述統計量を書き出す</span></span>
+<span id="cb14-7"><a href="#cb14-7" aria-hidden="true" tabindex="-1"></a><span class="fu">datasummary</span>(crmrte <span class="sc">+</span> taxpc <span class="sc">+</span> polpc <span class="sc">~</span> N <span class="sc">+</span> Mean <span class="sc">+</span> SD <span class="sc">+</span> Min <span class="sc">+</span> Median <span class="sc">+</span> Max,</span>
+<span id="cb14-8"><a href="#cb14-8" aria-hidden="true" tabindex="-1"></a>            <span class="at">data =</span> crime4, <span class="at">fmt =</span> <span class="dv">3</span>, <span class="at">title =</span> <span class="st">"HTML形式で保存"</span>,</span>
+<span id="cb14-9"><a href="#cb14-9" aria-hidden="true" tabindex="-1"></a>            <span class="at">output =</span> <span class="st">"C:/Users/narita yoshiyuki/Desktop/相澤ゼミ_資料/TA/Aizawa_seminar_TA/R_Studio_lec/output/datasummary.html"</span>)</span></code></pre></div><button title="コピー" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+<p>まとめとして、<code>summary()</code>や<code>describ()</code>といった関数は、研究者自身が分析を始める前に確認する用途として非常に便利な存在である。一方で、記述統計量をレポートに載せる用途として考えた場合、上記の関数は他のパッケージ・関数がなければ綺麗な表出力が出来ない。そのため、<u>記述統計量を論文に載せる目的としては<code>datasummary()</code>を用いることが賢明な方法であると思われる</u>。</p>
 </section>
 </section>
 </section>
@@ -436,11 +913,10 @@ Note:                                   *p&lt;0.1; **p&lt;0.05; ***p&lt;0.01</co
 <div id="quarto-appendix" class="default"><section id="footnotes" class="footnotes footnotes-end-of-document" role="doc-endnotes"><h2 class="anchored quarto-appendix-heading">脚注</h2>
 
 <ol>
-<li id="fn1"><p>切片の推定値<span class="math inline">\(\beta_{0}\)</span>は一般的に<code>Intercept</code>や<code>Constant</code>の行に示されている。<a href="#fnref1" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
-<li id="fn2"><p>こっちの方が一般的<a href="#fnref2" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
-<li id="fn3"><p>デフォルトは<code>type = "latex"</code><a href="#fnref3" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
-<li id="fn4"><p><code>?modelsummary</code>のように、確認したい関数の前に<code>?</code>を付けることで、R Studioの右下に存在するhelpが詳細を教えてくれる。<a href="#fnref4" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
-<li id="fn5"><p>当然だがWord上で分析結果の値を作為的に変えることは絶対にしてはならない。<a href="#fnref5" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
+<li id="fn1"><p>読み手に示すのみならず、分析者自身が分析を行なう前に記述統計量を確認することで、データに異常（外れ値・欠損値など）があるかどうかを確認することにも役立つ。<a href="#fnref1" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
+<li id="fn2"><p>データフレームが欠損値(NA)を含む場合、<code>summary()</code>は各変数のNAの数も教えてくれる。<a href="#fnref2" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
+<li id="fn3"><p><code>summary()</code>や<code>describe()</code>を綺麗な形式で出力する場合は、{gt}や{kableExtra}といった表の生成・整形用のパッケージに、作成した記述統計表を渡す必要がある。<a href="#fnref3" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
+<li id="fn4"><p>対応するファイル形式としてhtml, csv, tex, docx, pptx, md, rtf, jpg, pngなどが可能。他にも様々なファイル形式・データ型に対応した出力が可能であり、興味がある方はR上で<code>?datasummary</code>と打ち込んで実行すれば、画面右下にhelp機能（関数の役割やオプションの説明）が表示される。<a href="#fnref4" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
 </ol>
 </section></div></main>
 <!-- /main column -->
